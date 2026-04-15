@@ -1,0 +1,1194 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anamnese Fragebogen – Idunn</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Georgia', serif; background: #faf8f5; color: #2c2c2c; min-height: 100vh; }
+
+  .header-banner {
+    background: #2c2c2c;
+    color: #e8d5c4;
+    text-align: center;
+    padding: 28px 20px 22px;
+    letter-spacing: 3px;
+    font-size: 11px;
+    text-transform: uppercase;
+  }
+  .header-banner h1 { font-size: 26px; letter-spacing: 6px; margin-bottom: 4px; font-weight: normal; }
+
+  .container { max-width: 720px; margin: 0 auto; padding: 40px 24px 80px; }
+
+  .intro-card {
+    background: #fff;
+    border: 1px solid #e4ddd5;
+    border-radius: 4px;
+    padding: 32px;
+    margin-bottom: 36px;
+    line-height: 1.8;
+    font-size: 15px;
+    color: #4a4a4a;
+  }
+  .intro-card p { margin-bottom: 14px; }
+  .intro-card p:last-child { margin-bottom: 0; }
+
+  .section-divider {
+    background: #2c2c2c;
+    color: #e8d5c4;
+    padding: 10px 18px;
+    font-size: 12px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin: 40px 0 24px;
+    border-radius: 2px;
+  }
+
+  .question-block {
+    background: #fff;
+    border: 1px solid #e4ddd5;
+    border-radius: 4px;
+    padding: 24px 28px;
+    margin-bottom: 16px;
+  }
+  .question-label {
+    font-size: 15px;
+    font-weight: bold;
+    color: #2c2c2c;
+    margin-bottom: 14px;
+    line-height: 1.5;
+  }
+  .question-label span.num {
+    color: #b09080;
+    font-weight: normal;
+    margin-right: 6px;
+  }
+  .hint { font-size: 12px; color: #999; font-style: italic; margin-bottom: 10px; }
+
+  input[type="text"], input[type="email"], textarea {
+    width: 100%;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    padding: 10px 14px;
+    font-size: 15px;
+    font-family: inherit;
+    background: #fdfcfb;
+    color: #2c2c2c;
+    transition: border-color 0.2s;
+  }
+  input[type="text"]:focus, input[type="email"]:focus, textarea:focus {
+    outline: none;
+    border-color: #b09080;
+    background: #fff;
+  }
+  textarea { resize: vertical; min-height: 80px; }
+
+  .options-list { list-style: none; }
+  .options-list li { margin-bottom: 8px; }
+  .options-list label {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    cursor: pointer;
+    font-size: 14px;
+    line-height: 1.4;
+    padding: 6px 10px;
+    border-radius: 3px;
+    transition: background 0.15s;
+  }
+  .options-list label:hover { background: #f5f0eb; }
+  .options-list input[type="radio"],
+  .options-list input[type="checkbox"] {
+    width: 17px; height: 17px; flex-shrink: 0; margin-top: 1px;
+    accent-color: #8c6e5a;
+  }
+
+  .sonstiges-input {
+    margin-top: 6px;
+    display: none;
+    width: calc(100% - 27px);
+    margin-left: 27px;
+  }
+  .sonstiges-input.visible { display: block; }
+
+  .scale-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 6px;
+  }
+  .scale-item { text-align: center; }
+  .scale-item input[type="radio"] { display: block; margin: 0 auto 4px; accent-color: #8c6e5a; }
+  .scale-item label { font-size: 12px; color: #666; }
+
+  .submit-area { text-align: center; margin-top: 48px; }
+  .btn-submit {
+    background: #2c2c2c;
+    color: #e8d5c4;
+    border: none;
+    padding: 16px 56px;
+    font-size: 13px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    font-family: inherit;
+    cursor: pointer;
+    border-radius: 3px;
+    transition: background 0.2s;
+  }
+  .btn-submit:hover { background: #4a3f35; }
+  .btn-submit:disabled { background: #aaa; cursor: default; }
+
+  .success-screen {
+    display: none;
+    text-align: center;
+    padding: 60px 20px;
+    background: #fff;
+    border: 1px solid #e4ddd5;
+    border-radius: 4px;
+  }
+  .success-screen h2 { font-size: 22px; letter-spacing: 2px; margin-bottom: 20px; color: #2c2c2c; }
+  .success-screen p { color: #666; font-size: 15px; line-height: 1.7; }
+  .success-icon { font-size: 48px; margin-bottom: 20px; }
+
+  .required-note { color: #b09080; font-size: 12px; margin-bottom: 24px; }
+
+  @media (max-width: 600px) {
+    .container { padding: 24px 16px 60px; }
+    .question-block { padding: 18px 16px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header-banner">
+  <h1>Idunn</h1>
+  Anamnese Fragebogen
+</div>
+
+<div class="container">
+
+  <div class="intro-card">
+    <p><strong>Hinweis zur ganzheitlichen Betrachtung</strong></p>
+    <p>Die folgenden Fragen dienen dazu, Deine Haut- und Gesundheitssituation <strong>in ihrer Gesamtheit</strong> besser zu verstehen.</p>
+    <p>Haut reagiert nicht isoliert, sondern steht in enger Verbindung mit Schlaf, Stress, Ernährung, Hormonen, Verdauung, Emotionen und Deinem Alltag.</p>
+    <p>Es geht hierbei <strong>nicht um Diagnosen oder Bewertungen</strong>, sondern um Deine persönliche Wahrnehmung, Deine Gewohnheiten und Dein aktuelles Körpergefühl.</p>
+    <p>Bitte beantworte die Fragen so ehrlich und intuitiv wie möglich. Es gibt kein Richtig oder Falsch – jede Antwort ist wertvoll.</p>
+  </div>
+
+  <p class="required-note">* Pflichtfelder</p>
+
+  <form id="form">
+
+    <!-- ======== PERSÖNLICHE DATEN ======== -->
+    <div class="section-divider">Persönliche Daten</div>
+
+    <div class="question-block">
+      <div class="question-label"><span class="num">1.</span> E-Mail-Adresse *</div>
+      <input type="email" name="email" required placeholder="deine@email.de">
+    </div>
+
+    <div class="question-block">
+      <div class="question-label"><span class="num">2.</span> Wie darf ich dich ansprechen?</div>
+      <input type="text" name="name" placeholder="Dein Name">
+    </div>
+
+    <div class="question-block">
+      <div class="question-label"><span class="num">3.</span> Wie alt bist du?</div>
+      <ul class="options-list">
+        <li><label><input type="radio" name="alter" value="bis 25"> bis 25</label></li>
+        <li><label><input type="radio" name="alter" value="25-35"> 25–35</label></li>
+        <li><label><input type="radio" name="alter" value="36-45"> 36–45</label></li>
+        <li><label><input type="radio" name="alter" value="46-55"> 46–55</label></li>
+        <li><label><input type="radio" name="alter" value="55+"> 55+</label></li>
+      </ul>
+    </div>
+
+    <!-- ======== ALLTAG ======== -->
+    <div class="section-divider">Alltag &amp; Umgebung</div>
+
+    <div class="question-block">
+      <div class="question-label"><span class="num">4.</span> Wo befindest Du Dich hauptsächlich? In welcher Umgebung arbeitest Du gewöhnlich?</div>
+      <div class="hint">Mehrfachauswahl möglich</div>
+      <ul class="options-list">
+        <li><label><input type="checkbox" name="umgebung" value="Büro"> Büro</label></li>
+        <li><label><input type="checkbox" name="umgebung" value="Homeoffice"> Homeoffice</label></li>
+        <li><label><input type="checkbox" name="umgebung" value="viel Bildschirmzeit"> viel Bildschirmzeit</label></li>
+        <li><label><input type="checkbox" name="umgebung" value="Klimaanlage"> Klimaanlage</label></li>
+        <li><label><input type="checkbox" name="umgebung" value="trockene Luft"> trockene Luft</label></li>
+        <li><label><input type="checkbox" name="umgebung_sonstiges_check" value="Sonstiges" class="toggle-sonstiges" data-target="umgebung_sonstiges"> Sonstiges</label></li>
+      </ul>
+      <input type="text" name="umgebung_sonstiges" class="sonstiges-input" placeholder="Bitte beschreiben...">
+    </div>
+
+    <div class="question-block">
+      <div class="question-label"><span class="num">5.</span> Wie fühlst Du Dich nach der Arbeit?</div>
+      <input type="text" name="gefuehl_nach_arbeit" placeholder="...">
+    </div>
+
+    <div class="question-block">
+      <div class="question-label"><span class="num">6.</span> Wie würdest Du Deinen aktuellen Alltag in 2–3 Worten beschreiben?</div>
+      <input type="text" name="alltag_beschreibung" placeholder="z.B. stressig und vollgepackt">
+    </div>
+
+    <!-- ======== HAUTBILD ======== -->
+    <div class="section-divider">Hautbild – Selbstwahrnehmung</div>
+
+    <div class="question-block">
+      <div class="question-label"><span class="num">7.</span> Beschreibe Deine Haut so gut wie möglich.</div>
+      <textarea name="haut_beschreibung" placeholder="Wie fühlt sich Deine Haut an? Was fällt Dir auf?"></textarea>
+    </div>
+
+    <div class="question-block">
+      <div class="question-label"><span class="num">8.</span> Hautbild – Was trifft auf Dich zu?</div>
+      <div class="hint">Mehrfachauswahl möglich</div>
+      <ul class="options-list">
+        <li><label><input type="checkbox" name="hautbild" value="Trockenheit"> Trockenheit</label></li>
+        <li><label><input type="checkbox" name="hautbild" value="Spannungsgefühle"> Spannungsgefühle</label></li>
+        <li><label><input type="checkbox" name="hautbild" value="Öligkeit / Glanz"> Öligkeit / Glanz</label></li>
+        <li><label><input type="checkbox" name="hautbild" value="Rötungen"> Rötungen</label></li>
+        <li><label><input type="checkbox" name="hautbild" value="Sensibilität"> Sensibilität</label></li>
+        <li><label><input type="checkbox" name="hautbild" value="Unreinheiten / Mitesser / Pickel"> Unreinheiten / Mitesser / Pickel</label></li>
+        <li><label><input type="checkbox" name="hautbild" value="Vergrößerte Poren"> Vergrößerte Poren</label></li>
+        <li><label><input type="checkbox" name="hautbild" value="Schuppigkeit"> Schuppigkeit</label></li>
+        <li><label><input type="checkbox" name="hautbild" value="Fältchen / Linien"> Fältchen / Linien</label></li>
+        <li><label><input type="checkbox" name="hautbild" value="Müdigkeit / fahler Teint"> Müdigkeit / fahler Teint</label></li>
+        <li><label><input type="checkbox" name="hautbild" value="Hautgefühl nach Reinigung – Normal bis Trocken"> Hautgefühl nach Reinigung – Normal bis Trocken</label></li>
+        <li><label><input type="checkbox" name="hautbild" value="Hautgefühl im Tagesverlauf – eher fettig"> Hautgefühl im Tagesverlauf – eher fettig</label></li>
+        <li><label><input type="checkbox" name="hautbild" value="Hautgefühl nach Reinigung – spannt sehr"> Hautgefühl nach Reinigung – spannt sehr</label></li>
+        <li><label><input type="checkbox" name="hautbild" value="Hautgefühl im Tagesverlauf – muss nachcremen"> Hautgefühl im Tagesverlauf – muss nachcremen</label></li>
+      </ul>
+    </div>
+
+    <div class="question-block">
+      <div class="question-label"><span class="num">9.</span> Reagiert Deine Haut auf folgende Einflüsse?</div>
+      <div class="hint">Mehrfachauswahl möglich</div>
+      <ul class="options-list">
+        <li><label><input type="checkbox" name="haut_reaktion" value="Jahreszeitenwechsel"> Jahreszeitenwechsel</label></li>
+        <li><label><input type="checkbox" name="haut_reaktion" value="Stresssituationen"> Stresssituationen</label></li>
+        <li><label><input type="checkbox" name="haut_reaktion" value="hormonelle Phasen"> hormonelle Phasen</label></li>
+        <li><label><input type="checkbox" name="haut_reaktion" value="Duftstoffe"> Duftstoffe</label></li>
+        <li><label><input type="checkbox" name="haut_reaktion" value="bestimmte Produkte"> bestimmte Produkte</label></li>
+        <li><label><input type="checkbox" name="haut_reaktion" value="Wetterumschwünge"> Wetterumschwünge</label></li>
+        <li><label><input type="checkbox" name="haut_reaktion" value="nichts trifft zu"> nichts trifft zu</label></li>
+        <li><label><input type="checkbox" name="haut_reaktion_sonstiges_check" value="Sonstiges" class="toggle-sonstiges" data-target="haut_reaktion_sonstiges"> Sonstiges</label></li>
+      </ul>
+      <input type="text" name="haut_reaktion_sonstiges" class="sonstiges-input" placeholder="Bitte beschreiben...">
+    </div>
+
+    <div class="question-block">
+      <div class="question-label"><span class="num">10.</span> Wie stark reagiert Deine Haut auf emotionale Belastung?</div>
+      <ul class="options-list">
+        <li><label><input type="radio" name="haut_emotion"> kaum spürbar</label></li>
+        <li><label><input type="radio" name="haut_emotion" value="sichtbar"> sichtbar</label></li>
+        <li><label><input type="radio" name="haut_emotion" value="sehr deutlich"> sehr deutlich</label></li>
+      </ul>
+    </div>
+
+    <div class="question-block">
+      <div class="question-label"><span class="num">11.</span> Gibt es Hautbereiche, die immer wieder reagieren?</div>
+      <div class="hint">Mehrfachauswahl möglich</div>
+      <ul class="options-list">
+        <li><label><input type="checkbox" name="haut_bereiche" value="Gesicht"> Gesicht</label></li>
+        <li><label><input type="checkbox" name="haut_bereiche" value="Kinn / Unterkiefer"> Kinn / Unterkiefer</label></li>
+        <li><label><input type="checkbox" name="haut_bereiche" value="Stirn"> Stirn</label></li>
+        <li><label><input type="checkbox" name="haut_bereiche" value="Wangen"> Wangen</label></li>
+        <li><label><input type="checkbox" name="haut_bereiche" value="Hals / Dekolleté"> Hals / Dekolleté</label></li>
+        <li><label><input type="checkbox" name="haut_bereiche" value="Rücken / Schultern"> Rücken / Schultern</label></li>
+        <li><label><input type="checkbox" name="haut_bereiche" value="nichts trifft zu"> nichts trifft zu</label></li>
+        <li><label><input type="checkbox" name="haut_bereiche_sonstiges_check" value="Sonstiges" class="toggle-sonstiges" data-target="haut_bereiche_sonstiges"> Sonstiges</label></li>
+      </ul>
+      <input type="text" name="haut_bereiche_sonstiges" class="sonstiges-input" placeholder="Bitte beschreiben...">
+    </div>
+
+    <div class="question-block">
+      <div class="question-label"><span class="num">12.</span> Zu welchen Zeiten verschlechtert / verändert sich Dein Hautbild am ehesten?</div>
+      <div class="hint">Mehrfachauswahl möglich</div>
+      <ul class="options-list">
+        <li><label><input type="checkbox" name="haut_verschlechterung" value="bei Stress"> bei Stress</label></li>
+        <li><label><input type="checkbox" name="haut_verschlechterung" value="rund um den Zyklus"> rund um den Zyklus</label></li>
+        <li><label><input type="checkbox" name="haut_verschlechterung" value="bei Schlafmangel"> bei Schlafmangel</label></li>
+        <li><label><input type="checkbox" name="haut_verschlechterung" value="bei Ernährungsumstellungen"> bei Ernährungsumstellungen</label></li>
+        <li><label><input type="checkbox" name="haut_verschlechterung" value="bei Wetterwechsel"> bei Wetterwechsel</label></li>
+        <li><label><input type="checkbox" name="haut_verschlechterung" value="ohne erkennbare Auslöser"> ohne erkennbare Auslöser</label></li>
+        <li><label><input type="checkbox" name="haut_verschlechterung" value="nichts trifft zu"> nichts trifft zu</label></li>
+      </ul>
+    </div>
+
+    <div class="question-block">
+      <div class="question-label"><span class="num">13.</span> Wie schnell beruhigt sich Deine Haut nach Reizungen?</div>
+      <ul class="options-list">
+        <li><label><input type="radio" name="haut_beruhigung" value="innerhalb weniger Stunden"> innerhalb weniger Stunden</label></li>
+        <li><label><input type="radio" name="haut_beruhigung" value="innerhalb eines Tages"> innerhalb eines Tages</label></li>
+        <li><label><input type="radio" name="haut_beruhigung" value="mehrere Tage"> mehrere Tage</label></li>
+        <li><label><input type="radio" name="haut_beruhigung" value="sehr langsam"> sehr langsam</label></li>
+        <li><label><input type="radio" name="haut_beruhigung" value="nichts trifft zu"> nichts trifft zu</label></li>
+      </ul>
+    </div>
+
+    <div class="question-block">
+      <div class="question-label"><span class="num">14.</span> Bekannte Sensibilitäten / Allergien</div>
+      <div class="hint">Mehrfachauswahl möglich</div>
+      <ul class="options-list">
+        <li><label><input type="checkbox" name="sensibilitaeten" value="Neurodermitis"> Neurodermitis</label></li>
+        <li><label><input type="checkbox" name="sensibilitaeten" value="Heuschnupfen"> Heuschnupfen</label></li>
+        <li><label><input type="checkbox" name="sensibilitaeten" value="Diabetes"> Diabetes</label></li>
+        <li><label><input type="checkbox" name="sensibilitaeten" value="Kontaktallergien"> Kontaktallergien</label></li>
+        <li><label><input type="checkbox" name="sensibilitaeten" value="mir ist nicht bekannt"> mir ist nicht bekannt</label></li>
+        <li><label><input type="checkbox" name="sensibilitaeten_sonstiges_check" value="bekannte Sensibilitäten / Allergien" class="toggle-sonstiges" data-target="sensibilitaeten_sonstiges"> bekannte Sensibilitäten / Allergien (bitte angeben)</label></li>
+      </ul>
+      <input type="text" name="sensibilitaeten_sonstiges" class="sonstiges-input" placeholder="Welche Sensibilitäten / Allergien?">
+    </div>
+
+    <div class="question-block">
+      <div class="question-label"><span class="num">15.</span> Was möchtest Du an Deiner Haut verbessern / ändern?</div>
+      <textarea name="haut_verbesserung" placeholder="..."></textarea>
+    </div>
+
+    <div class="question-block">
+      <div class="question-label"><span class="num">16.</span> Welche Merkmale treffen auf Deine Haut zu?</div>
+      <div class="hint">Mehrfachauswahl möglich</div>
+      <ul class="options-list">
+        <li><label><input type="checkbox" name="haut_merkmale" value="trockene Partien"> trockene Partien</label></li>
+        <li><label><input type="checkbox" name="haut_merkmale" value="ölige Partien"> ölige Partien</label></li>
+        <li><label><input type="checkbox" name="haut_merkmale" value="Mischhaut"> Mischhaut</label></li>
+        <li><label><input type="checkbox" name="haut_merkmale" value="schuppige Stellen"> schuppige Stellen</label></li>
+        <li><label><input type="checkbox" name="haut_merkmale" value="empfindliche Bereiche"> empfindliche Bereiche</label></li>
+        <li><label><input type="checkbox" name="haut_merkmale" value="sichtbare Fältchen"> sichtbare Fältchen</label></li>
+        <li><label><input type="checkbox" name="haut_merkmale" value="Pigmentveränderungen"> Pigmentveränderungen</label></li>
+        <li><label><input type="checkbox" name="haut_merkmale" value="Reaktionen auf Stress / Zyklus / Wetter"> Reaktionen auf Stress / Zyklus / Wetter</label></li>
+        <li><label><input type="checkbox" name="haut_merkmale" value="normale Haut"> normale Haut</label></li>
+      </ul>
+    </div>
+
+    <div class="question-block">
+      <div class="question-label"><span class="num">17.</span> Welches Gefühl würde Deine Haut am ehesten beschreiben?</div>
+      <div class="hint">z.B. zufrieden, glücklich, begeistert, gelassen, gestresst, irritiert …</div>
+      <input type="text" name="haut_gefuehl" placeholder="...">
+    </div>
+
+    <div class="question-block">
+      <div class="question-label"><span class="num">18.</span> Gibt es Stellen, an denen Deine Haut besonders Stress zeigt?</div>
+      <input type="text" name="haut_stressstellen" placeholder="Wenn ja, wo?">
+    </div>
+
+    <div class="question-block">
+      <div class="question-label"><span class="num">19.</span> Was tut Deiner Haut gut?</div>
+      <textarea name="haut_gutes" placeholder="..."></textarea>
+    </div>
+
+    <!-- ======== PFLEGE ======== -->
+    <div class="section-divider">Aktuelle Pflegeprodukte &amp; Routinen</div>
+
+    <div class="question-block">
+      <div class="question-label"><span class="num">20.</span> Reinigung – Was verwendest Du?</div>
+      <div class="hint">Mehrfachauswahl möglich</div>
+      <ul class="options-list">
+        <li><label><input type="checkbox" name="reinigung" value="keine"> keine</label></li>
+        <li><label><input type="checkbox" name="reinigung" value="Wasser"> Wasser</label></li>
+        <li><label><input type="checkbox" name="reinigung" value="Reinigungsschaum"> Reinigungsschaum</label></li>
+        <li><label><input type="checkbox" name="reinigung" value="Peeling"> Peeling</label></li>
+        <li><label><input type="checkbox" name="reinigung" value="Toner / Gesichtswasser"> Toner / Gesichtswasser</label></li>
+        <li><label><input type="checkbox" name="reinigung" value="Reinigungsgel"> Reinigungsgel</label></li>
+        <li><label><input type="checkbox" name="reinigung" value="Reinigungsmilch"> Reinigungsmilch</label></li>
+        <li><label><input type="checkbox" name="reinigung_sonstiges_check" value="Sonstiges" class="toggle-sonstiges" data-target="reinigung_sonstiges"> Sonstiges</label></li>
+      </ul>
+      <input type="text" name="reinigung_sonstiges" class="sonstiges-input" placeholder="Bitte angeben...">
+    </div>
+
+    <div class="question-block">
+      <div class="question-label"><span class="num">21.</span> Aktuelle Pflegeprodukte – Seren</div>
+      <div class="hint">Mehrfachauswahl möglich</div>
+      <ul class="options-list">
+        <li><label><input type="checkbox" name="seren" value="keins"> keins</label></li>
+        <li><label><input type="checkbox" name="seren" value="Hyaluron"> Hyaluron</label></li>
+        <li><label><input type="checkbox" name="seren" value="Vitamin C"> Vitamin C</label></li>
+        <li><label><input type="checkbox" name="seren" value="Retinol"> Retinol</label></li>
+        <li><label><input type="checkbox" name="seren" value="Ceramide"> Ceramide</label></li>
+        <li><label><input type="checkbox" name="seren" value="Aloe Vera"> Aloe Vera</label></li>
+        <li><label><input type="checkbox" name="seren" value="Feuchtigkeitsserum"> Feuchtigkeitsserum</label></li>
+        <li><label><input type="checkbox" name="seren" value="weiß ich nicht"> ich weiß nicht, was ich habe</label></li>
+        <li><label><input type="checkbox" name="seren_sonstiges_check" value="Sonstiges" class="toggle-sonstiges" data-target="seren_sonstiges"> Sonstiges</label></li>
+      </ul>
+      <input type="text" name="seren_sonstiges" class="sonstiges-input" placeholder="Bitte angeben...">
+    </div>
+
+    <div class="question-block">
+      <div class="question-label"><span class="num">22.</span> Aktuelle Cremeprodukte</div>
+      <div class="hint">Mehrfachauswahl möglich</div>
+      <ul class="options-list">
+        <li><label><input type="checkbox" name="creme" value="Tagespflege"> Tagespflege</label></li>
+        <li><label><input type="checkbox" name="creme" value="Nachtpflege"> Nachtpflege</label></li>
+        <li><label><input type="checkbox" name="creme" value="SPF"> SPF / Sonnenschutz</label></li>
+        <li><label><input type="checkbox" name="creme" value="Augenpflege"> Augenpflege</label></li>
+        <li><label><input type="checkbox" name="creme_sonstiges_check" value="Sonstiges" class="toggle-sonstiges" data-target="creme_sonstiges"> Sonstiges</label></li>
+      </ul>
+      <input type="text" name="creme_sonstiges" class="sonstiges-input" placeholder="Bitte angeben...">
+    </div>
+
+    <div class="question-block">
+      <div class="question-label"><span class="num">23.</span> Aktuelle Pflege morgens</div>
+      <ul class="options-list">
+        <li><label><input type="radio" name="pflege_morgens" value="nie"> nie</label></li>
+        <li><label><input type="radio" name="pflege_morgens" value="selten"> selten</label></li>
+        <li><label><input type="radio" name="pflege_morgens" value="jeden Morgen"> jeden Morgen</label></li>
+      </ul>
+    </div>
+
+    <div class="question-block">
+      <div class="question-label"><span class="num">24.</span> Aktuelle Pflege abends</div>
+      <ul class="options-list">
+        <li><label><input type="radio" name="pflege_abends" value="nie"> nie</label></li>
+        <li><label><input type="radio" name="pflege_abends" value="selten"> selten</label></li>
+        <li><label><input type="radio" name="pflege_abends" value="jeden Abend"> jeden Abend</label></li>
+        <li><label><input type="radio" name="pflege_abends" value="nur wenn ich Make-up auftrage"> nur wenn ich Make-up auftrage</label></li>
+        <li><label><input type="radio" name="pflege_abends" value="Sonstiges"> Sonstiges</label></li>
+      </ul>
+    </div>
+
+    <!-- ======== ERNÄHRUNG ======== -->
+    <div class="section-divider">Ernährung – Darm – Hormone</div>
+
+    <div class="question-block">
+      <div class="question-label"><span class="num">25.</span> Wie viel trinkst Du am Tag?</div>
+      <ul class="options-list">
+        <li><label><input type="radio" name="trinkmenge" value="weniger als 500ml"> weniger als 500 ml</label></li>
+        <li><label><input type="radio" name="trinkmenge" value="weniger als 1L"> weniger als 1 L</label></li>
+        <li><label><input type="radio" name="trinkmenge" value="mehr als 1L"> mehr als 1 L</label></li>
+        <li><label><input type="radio" name="trinkmenge" value="ca. 2L"> ca. 2 L</label></li>
+        <li><label><input type="radio" name="trinkmenge" value="mehr als 2L"> mehr als 2 L</label></li>
+        <li><label><input type="radio" name="trinkmenge" value="2L, bei Sport/Sauna mehr"> 2 L, an Sport-/Saunatagen auch mehr</label></li>
+      </ul>
+    </div>
+
+    <div class="question-block">
+      <div class="question-label"><span class="num">26.</span> Wie viel Kaffee trinkst Du am Tag?</div>
+      <ul class="options-list">
+        <li><label><input type="radio" name="kaffee" value="keinen"> keinen</label></li>
+        <li><label><input type="radio" name="kaffee" value="1-2 Tassen"> 1–2 Tassen</label></li>
+        <li><label><input type="radio" name="kaffee" value="3-4 Tassen"> 3–4 Tassen</label></li>
+        <li><label><input type="radio" name="kaffee" value="mehr als 4 Tassen"> mehr als 4 Tassen</label></li>
+      </ul>
+    </div>
+
+    <div class="question-block">
+      <div class="question-label"><span class="num">27.</span> Wie viele Softdrinks / Energiedrinks pro Woche?</div>
+      <ul class="options-list">
+        <li><label><input type="radio" name="softdrinks" value="nie"> nie</label></li>
+        <li><label><input type="radio" name="softdrinks" value="weniger als 1x"> weniger als 1×</label></li>
+        <li><label><input type="radio" name="softdrinks" value="1-2x"> 1–2×</label></li>
+        <li><label><input type="radio" name="softdrinks" value="3-4x"> 3–4×</label></li>
+        <li><label><input type="radio" name="softdrinks" value="jeden Tag"> jeden Tag</label></li>
+      </ul>
+    </div>
+
+    <div class="question-block">
+      <div class="question-label"><span class="num">28.</span> Wie viele Säfte trinkst Du pro Woche?</div>
+      <ul class="options-list">
+        <li><label><input type="radio" name="saefte" value="nie"> nie</label></li>
+        <li><label><input type="radio" name="saefte" value="weniger als 1x"> weniger als 1×</label></li>
+        <li><label><input type="radio" name="saefte" value="1-2x"> 1–2×</label></li>
+        <li><label><input type="radio" name="saefte" value="3-4x"> 3–4×</label></li>
+        <li><label><input type="radio" name="saefte" value="jeden Tag"> jeden Tag</label></li>
+      </ul>
+    </div>
+
+    <div class="question-block">
+      <div class="question-label"><span class="num">29.</span> Trinkst Du Alkohol?</div>
+      <ul class="options-list">
+        <li><label><input type="radio" name="alkohol" value="nie"> nie</label></li>
+        <li><label><input type="radio" name="alkohol" value="selten"> selten</label></li>
+        <li><label><input type="radio" name="alkohol" value="nur zu besonderen Anlässen"> nur zu besonderen Anlässen</label></li>
+        <li><label><input type="radio" name="alkohol" value="gerne mal abends etwas"> gerne mal abends etwas</label></li>
+      </ul>
+    </div>
+
+    <div class="question-block">
+      <div class="question-label"><span class="num">30.</span> Wie häufig isst Du frisches Obst?</div>
+      <ul class="options-list">
+        <li><label><input type="radio" name="obst_haeufigkeit" value="jeden Tag"> jeden Tag</label></li>
+        <li><label><input type="radio" name="obst_haeufigkeit" value="mehrmals pro Woche"> mehrmals pro Woche</label></li>
+        <li><label><input type="radio" name="obst_haeufigkeit" value="mehrmals pro Monat"> mehrmals pro Monat</label></li>
+        <li><label><input type="radio" name="obst_haeufigkeit" value="selten"> selten</label></li>
+      </ul>
+    </div>
+
+    <div class="question-block">
+      <div class="question-label"><span class="num">31.</span> Wenn täglich: Wie viele Portionen Obst? (ca. 80 g)</div>
+      <ul class="options-list">
+        <li><label><input type="radio" name="obst_portionen" value="1"> 1</label></li>
+        <li><label><input type="radio" name="obst_portionen" value="2"> 2</label></li>
+        <li><label><input type="radio" name="obst_portionen" value="3"> 3</label></li>
+        <li><label><input type="radio" name="obst_portionen" value="mehr"> mehr</label></li>
+      </ul>
+    </div>
+
+    <div class="question-block">
+      <div class="question-label"><span class="num">32.</span> Wie häufig isst Du frisches Gemüse?</div>
+      <ul class="options-list">
+        <li><label><input type="radio" name="gemuese_haeufigkeit" value="jeden Tag"> jeden Tag</label></li>
+        <li><label><input type="radio" name="gemuese_haeufigkeit" value="mehrmals pro Woche"> mehrmals pro Woche</label></li>
+        <li><label><input type="radio" name="gemuese_haeufigkeit" value="mehrmals pro Monat"> mehrmals pro Monat</label></li>
+        <li><label><input type="radio" name="gemuese_haeufigkeit" value="selten"> selten</label></li>
+      </ul>
+    </div>
+
+    <div class="question-block">
+      <div class="question-label"><span class="num">33.</span> Wenn täglich: Wie viele Portionen Gemüse?</div>
+      <ul class="options-list">
+        <li><label><input type="radio" name="gemuese_portionen" value="1"> 1</label></li>
+        <li><label><input type="radio" name="gemuese_portionen" value="2"> 2</label></li>
+        <li><label><input type="radio" name="gemuese_portionen" value="3"> 3</label></li>
+        <li><label><input type="radio" name="gemuese_portionen" value="mehr"> mehr</label></li>
+      </ul>
+    </div>
+
+    <div class="question-block">
+      <div class="question-label"><span class="num">34.</span> Wie oft isst Du ballaststoffreiche Lebensmittel?</div>
+      <ul class="options-list">
+        <li><label><input type="radio" name="ballaststoffe" value="täglich"> täglich</label></li>
+        <li><label><input type="radio" name="ballaststoffe" value="3-5x pro Woche"> 3–5× pro Woche</label></li>
+        <li><label><input type="radio" name="ballaststoffe" value="1-2x pro Woche"> 1–2× pro Woche</label></li>
+        <li><label><input type="radio" name="ballaststoffe" value="selten"> selten</label></li>
+      </ul>
+    </div>
+
+    <div class="question-block">
+      <div class="question-label"><span class="num">35.</span> Wie oft isst Du gebratene Speisen?</div>
+      <ul class="options-list">
+        <li><label><input type="radio" name="gebraten" value="täglich"> täglich</label></li>
+        <li><label><input type="radio" name="gebraten" value="mehrere Male pro Woche"> mehrere Male pro Woche</label></li>
+        <li><label><input type="radio" name="gebraten" value="1x pro Woche"> 1× pro Woche</label></li>
+        <li><label><input type="radio" name="gebraten" value="seltener"> seltener</label></li>
+      </ul>
+    </div>
+
+    <div class="question-block">
+      <div class="question-label"><span class="num">36.</span> Wie oft isst Du frittiertes Essen?</div>
+      <ul class="options-list">
+        <li><label><input type="radio" name="frittiert" value="regelmäßig"> regelmäßig</label></li>
+        <li><label><input type="radio" name="frittiert" value="gelegentlich"> gelegentlich</label></li>
+        <li><label><input type="radio" name="frittiert" value="selten"> selten</label></li>
+      </ul>
+    </div>
+
+    <div class="question-block">
+      <div class="question-label"><span class="num">37.</span> Weißbrot / helle Backwaren</div>
+      <ul class="options-list">
+        <li><label><input type="radio" name="weissbrot" value="täglich"> täglich</label></li>
+        <li><label><input type="radio" name="weissbrot" value="3-5x pro Woche"> 3–5× pro Woche</label></li>
+        <li><label><input type="radio" name="weissbrot" value="1-2x pro Woche"> 1–2× pro Woche</label></li>
+        <li><label><input type="radio" name="weissbrot" value="selten"> selten</label></li>
+      </ul>
+    </div>
+
+    <div class="question-block">
+      <div class="question-label"><span class="num">38.</span> Vollkornprodukte</div>
+      <ul class="options-list">
+        <li><label><input type="radio" name="vollkorn" value="täglich"> täglich</label></li>
+        <li><label><input type="radio" name="vollkorn" value="3-5x pro Woche"> 3–5× pro Woche</label></li>
+        <li><label><input type="radio" name="vollkorn" value="1-2x pro Woche"> 1–2× pro Woche</label></li>
+        <li><label><input type="radio" name="vollkorn" value="selten"> selten</label></li>
+      </ul>
+    </div>
+
+    <div class="question-block">
+      <div class="question-label"><span class="num">39.</span> Wie oft isst Du Süßes?</div>
+      <ul class="options-list">
+        <li><label><input type="radio" name="suesswaren" value="täglich"> täglich</label></li>
+        <li><label><input type="radio" name="suesswaren" value="mehrere Male pro Woche"> mehrere Male pro Woche</label></li>
+        <li><label><input type="radio" name="suesswaren" value="gelegentlich"> gelegentlich</label></li>
+        <li><label><input type="radio" name="suesswaren" value="selten"> selten</label></li>
+        <li><label><input type="radio" name="suesswaren" value="fast nie"> fast nie</label></li>
+      </ul>
+    </div>
+
+    <div class="question-block">
+      <div class="question-label"><span class="num">40.</span> Wenn Du Heißhunger hast, tendierst Du eher zu:</div>
+      <ul class="options-list">
+        <li><label><input type="radio" name="heisshunger" value="süß"> süß</label></li>
+        <li><label><input type="radio" name="heisshunger" value="salzig"> salzig</label></li>
+        <li><label><input type="radio" name="heisshunger" value="beidem"> beidem</label></li>
+        <li><label><input type="radio" name="heisshunger" value="keiner Tendenz"> keiner Tendenz</label></li>
+      </ul>
+    </div>
+
+    <div class="question-block">
+      <div class="question-label"><span class="num">41.</span> Wie häufig isst Du tierische Lebensmittel?</div>
+      <ul class="options-list">
+        <li><label><input type="radio" name="tierisch" value="täglich"> täglich</label></li>
+        <li><label><input type="radio" name="tierisch" value="3-5x pro Woche"> 3–5× pro Woche</label></li>
+        <li><label><input type="radio" name="tierisch" value="1-2x pro Woche"> 1–2× pro Woche</label></li>
+        <li><label><input type="radio" name="tierisch" value="selten"> selten</label></li>
+        <li><label><input type="radio" name="tierisch" value="nie"> nie</label></li>
+      </ul>
+    </div>
+
+    <div class="question-block">
+      <div class="question-label"><span class="num">42.</span> Nimmst Du Nahrungsergänzungsmittel?</div>
+      <ul class="options-list">
+        <li><label><input type="radio" name="nahrungsergaenzung" value="ja"> ja</label></li>
+        <li><label><input type="radio" name="nahrungsergaenzung" value="nein"> nein</label></li>
+      </ul>
+    </div>
+
+    <div class="question-block">
+      <div class="question-label"><span class="num">43.</span> Wenn ja – was bzw. wofür? (z.B. Omega, Vitamin D, Magnesium)</div>
+      <textarea name="nahrungsergaenzung_was" placeholder="..."></textarea>
+    </div>
+
+    <div class="question-block">
+      <div class="question-label"><span class="num">44.</span> Wobei unterstützen sie Dich?</div>
+      <textarea name="nahrungsergaenzung_wofuer" placeholder="..."></textarea>
+    </div>
+
+    <div class="question-block">
+      <div class="question-label"><span class="num">45.</span> Wie würdest Du Deine Verdauung insgesamt beschreiben?</div>
+      <ul class="options-list">
+        <li><label><input type="radio" name="verdauung" value="regelmäßig"> regelmäßig</label></li>
+        <li><label><input type="radio" name="verdauung" value="wechselhaft"> wechselhaft</label></li>
+        <li><label><input type="radio" name="verdauung" value="eher träge"> eher träge</label></li>
+        <li><label><input type="radio" name="verdauung" value="eher empfindlich"> eher empfindlich</label></li>
+      </ul>
+    </div>
+
+    <div class="question-block">
+      <div class="question-label"><span class="num">46.</span> Wie häufig hast Du Blähungen oder ein Völlegefühl?</div>
+      <ul class="options-list">
+        <li><label><input type="radio" name="blaehungen" value="nie"> nie</label></li>
+        <li><label><input type="radio" name="blaehungen" value="selten"> selten</label></li>
+        <li><label><input type="radio" name="blaehungen" value="gelegentlich"> gelegentlich</label></li>
+        <li><label><input type="radio" name="blaehungen" value="regelmäßig"> regelmäßig</label></li>
+      </ul>
+    </div>
+
+    <div class="question-block">
+      <div class="question-label"><span class="num">47.</span> Gibt es Lebensmittel, nach denen sich Deine Haut oder Dein Bauch verändert?</div>
+      <ul class="options-list">
+        <li><label><input type="radio" name="lebensmittel_reaktion" value="ja"> ja</label></li>
+        <li><label><input type="radio" name="lebensmittel_reaktion" value="nein"> nein</label></li>
+        <li><label><input type="radio" name="lebensmittel_reaktion" value="unsicher"> unsicher</label></li>
+      </ul>
+    </div>
+
+    <div class="question-block">
+      <div class="question-label"><span class="num">48.</span> Hast Du einen regelmäßigen Zyklus?</div>
+      <ul class="options-list">
+        <li><label><input type="radio" name="zyklus" value="ja, sehr genau"> ja, sehr genau</label></li>
+        <li><label><input type="radio" name="zyklus" value="nein, es schwankt immer wieder"> nein, es schwankt immer wieder</label></li>
+      </ul>
+    </div>
+
+    <div class="question-block">
+      <div class="question-label"><span class="num">49.</span> Wann zeigt sich Deine Haut am empfindlichsten?</div>
+      <ul class="options-list">
+        <li><label><input type="radio" name="haut_empfindlich_wann" value="vor der Periode"> vor der Periode</label></li>
+        <li><label><input type="radio" name="haut_empfindlich_wann" value="während der Periode"> während der Periode</label></li>
+        <li><label><input type="radio" name="haut_empfindlich_wann" value="nach dem Eisprung"> nach dem Eisprung</label></li>
+        <li><label><input type="radio" name="haut_empfindlich_wann" value="unabhängig vom Zyklus"> unabhängig vom Zyklus</label></li>
+        <li><label><input type="radio" name="haut_empfindlich_wann" value="es gibt keinen Unterschied"> es gibt keinen Unterschied</label></li>
+      </ul>
+    </div>
+
+    <div class="question-block">
+      <div class="question-label"><span class="num">50.</span> Hat Dein Zyklus Einfluss auf Dein Hautbild?</div>
+      <ul class="options-list">
+        <li><label><input type="radio" name="zyklus_einfluss" value="ja, deutlich"> ja, deutlich</label></li>
+        <li><label><input type="radio" name="zyklus_einfluss" value="leicht"> leicht</label></li>
+        <li><label><input type="radio" name="zyklus_einfluss" value="kaum"> kaum</label></li>
+        <li><label><input type="radio" name="zyklus_einfluss" value="nicht relevant"> nicht relevant</label></li>
+      </ul>
+    </div>
+
+    <div class="question-block">
+      <div class="question-label"><span class="num">51.</span> Nimmst Du hormonelle Verhütung oder hast Du sie genutzt?</div>
+      <ul class="options-list">
+        <li><label><input type="radio" name="verhuetung" value="ja, aktuell"> ja, aktuell</label></li>
+        <li><label><input type="radio" name="verhuetung" value="früher"> früher</label></li>
+        <li><label><input type="radio" name="verhuetung" value="nein"> nein</label></li>
+      </ul>
+    </div>
+
+    <!-- ======== LEBENSSTIL ======== -->
+    <div class="section-divider">Lebensstil – Stress &amp; Wohlbefinden</div>
+
+    <div class="question-block">
+      <div class="question-label"><span class="num">52.</span> Stresslevel aktuell (1 = gar kein Stress, 10 = sehr viel Stress)</div>
+      <div class="scale-row">
+        <div class="scale-item"><input type="radio" name="stresslevel" value="1" id="s1"><label for="s1">1</label></div>
+        <div class="scale-item"><input type="radio" name="stresslevel" value="2" id="s2"><label for="s2">2</label></div>
+        <div class="scale-item"><input type="radio" name="stresslevel" value="3" id="s3"><label for="s3">3</label></div>
+        <div class="scale-item"><input type="radio" name="stresslevel" value="4" id="s4"><label for="s4">4</label></div>
+        <div class="scale-item"><input type="radio" name="stresslevel" value="5" id="s5"><label for="s5">5</label></div>
+        <div class="scale-item"><input type="radio" name="stresslevel" value="6" id="s6"><label for="s6">6</label></div>
+        <div class="scale-item"><input type="radio" name="stresslevel" value="7" id="s7"><label for="s7">7</label></div>
+        <div class="scale-item"><input type="radio" name="stresslevel" value="8" id="s8"><label for="s8">8</label></div>
+        <div class="scale-item"><input type="radio" name="stresslevel" value="9" id="s9"><label for="s9">9</label></div>
+        <div class="scale-item"><input type="radio" name="stresslevel" value="10" id="s10"><label for="s10">10</label></div>
+      </div>
+    </div>
+
+    <div class="question-block">
+      <div class="question-label"><span class="num">53.</span> Wo spürst Du Stress zuerst?</div>
+      <div class="hint">Mehrfachauswahl möglich</div>
+      <ul class="options-list">
+        <li><label><input type="checkbox" name="stress_koerper" value="Kopf / Gedanken"> Kopf / Gedanken</label></li>
+        <li><label><input type="checkbox" name="stress_koerper" value="Nacken / Schultern"> Nacken / Schultern</label></li>
+        <li><label><input type="checkbox" name="stress_koerper" value="Bauch / Verdauung"> Bauch / Verdauung</label></li>
+        <li><label><input type="checkbox" name="stress_koerper" value="Haut"> Haut</label></li>
+        <li><label><input type="checkbox" name="stress_koerper" value="gesamter Körper"> gesamter Körper</label></li>
+        <li><label><input type="checkbox" name="stress_koerper" value="nichts trifft zu"> nichts trifft zu</label></li>
+        <li><label><input type="checkbox" name="stress_koerper_sonstiges_check" value="Sonstiges" class="toggle-sonstiges" data-target="stress_koerper_sonstiges"> Sonstiges</label></li>
+      </ul>
+      <input type="text" name="stress_koerper_sonstiges" class="sonstiges-input" placeholder="...">
+    </div>
+
+    <div class="question-block">
+      <div class="question-label"><span class="num">54.</span> Welche Art von Stress erlebst Du überwiegend?</div>
+      <div class="hint">Mehrfachauswahl möglich</div>
+      <ul class="options-list">
+        <li><label><input type="checkbox" name="stress_art" value="mental (Gedanken, Verantwortung, Organisation)"> mental (Gedanken, Verantwortung, Organisation)</label></li>
+        <li><label><input type="checkbox" name="stress_art" value="emotional (innere Anspannung, Druck, Erwartungen)"> emotional (innere Anspannung, Druck, Erwartungen)</label></li>
+        <li><label><input type="checkbox" name="stress_art" value="körperlich (Erschöpfung, Anspannung, Schmerzen)"> körperlich (Erschöpfung, Anspannung, Schmerzen)</label></li>
+        <li><label><input type="checkbox" name="stress_art" value="eine Mischung aus allem"> eine Mischung aus allem</label></li>
+        <li><label><input type="checkbox" name="stress_art" value="nichts trifft zu"> nichts trifft zu</label></li>
+        <li><label><input type="checkbox" name="stress_art_sonstiges_check" value="Sonstiges" class="toggle-sonstiges" data-target="stress_art_sonstiges"> Sonstiges</label></li>
+      </ul>
+      <input type="text" name="stress_art_sonstiges" class="sonstiges-input" placeholder="...">
+    </div>
+
+    <div class="question-block">
+      <div class="question-label"><span class="num">55.</span> In welchen Situationen entsteht Dein Stress am häufigsten?</div>
+      <div class="hint">Mehrfachauswahl möglich</div>
+      <ul class="options-list">
+        <li><label><input type="checkbox" name="stress_situation" value="Arbeit / Beruf"> Arbeit / Beruf</label></li>
+        <li><label><input type="checkbox" name="stress_situation" value="Familie / soziale Verpflichtungen"> Familie / soziale Verpflichtungen</label></li>
+        <li><label><input type="checkbox" name="stress_situation" value="Zeitdruck"> Zeitdruck</label></li>
+        <li><label><input type="checkbox" name="stress_situation" value="innere Ansprüche an Dich selbst"> innere Ansprüche an Dich selbst</label></li>
+        <li><label><input type="checkbox" name="stress_situation" value="unklare Strukturen"> unklare Strukturen</label></li>
+        <li><label><input type="checkbox" name="stress_situation" value="habe nie Stress"> habe nie Stress</label></li>
+        <li><label><input type="checkbox" name="stress_situation_sonstiges_check" value="Sonstiges" class="toggle-sonstiges" data-target="stress_situation_sonstiges"> Sonstiges</label></li>
+      </ul>
+      <input type="text" name="stress_situation_sonstiges" class="sonstiges-input" placeholder="...">
+    </div>
+
+    <div class="question-block">
+      <div class="question-label"><span class="num">56.</span> Wie reagiert Dein Körper bei anhaltendem Stress?</div>
+      <div class="hint">Mehrfachauswahl möglich</div>
+      <ul class="options-list">
+        <li><label><input type="checkbox" name="stress_reaktion" value="innere Unruhe"> innere Unruhe</label></li>
+        <li><label><input type="checkbox" name="stress_reaktion" value="verspannte Muskeln"> verspannte Muskeln</label></li>
+        <li><label><input type="checkbox" name="stress_reaktion" value="Müdigkeit / Erschöpfung"> Müdigkeit / Erschöpfung</label></li>
+        <li><label><input type="checkbox" name="stress_reaktion" value="Schlafprobleme"> Schlafprobleme</label></li>
+        <li><label><input type="checkbox" name="stress_reaktion" value="Verdauungsreaktionen"> Verdauungsreaktionen</label></li>
+        <li><label><input type="checkbox" name="stress_reaktion" value="Hautveränderungen"> Hautveränderungen</label></li>
+        <li><label><input type="checkbox" name="stress_reaktion" value="nichts trifft zu"> nichts trifft zu</label></li>
+        <li><label><input type="checkbox" name="stress_reaktion_sonstiges_check" value="Sonstiges" class="toggle-sonstiges" data-target="stress_reaktion_sonstiges"> Sonstiges</label></li>
+      </ul>
+      <input type="text" name="stress_reaktion_sonstiges" class="sonstiges-input" placeholder="...">
+    </div>
+
+    <div class="question-block">
+      <div class="question-label"><span class="num">57.</span> Was hilft Dir aktuell am besten, Stress zu regulieren?</div>
+      <div class="hint">Mehrfachauswahl möglich</div>
+      <ul class="options-list">
+        <li><label><input type="checkbox" name="stress_regulation" value="Bewegung"> Bewegung</label></li>
+        <li><label><input type="checkbox" name="stress_regulation" value="Ruhe / Rückzug"> Ruhe / Rückzug</label></li>
+        <li><label><input type="checkbox" name="stress_regulation" value="Gespräche"> Gespräche</label></li>
+        <li><label><input type="checkbox" name="stress_regulation" value="Natur"> Natur</label></li>
+        <li><label><input type="checkbox" name="stress_regulation" value="Atemübungen / Rituale"> Atemübungen / Rituale</label></li>
+        <li><label><input type="checkbox" name="stress_regulation" value="Schlaf"> Schlaf</label></li>
+        <li><label><input type="checkbox" name="stress_regulation" value="nichts trifft zu"> nichts trifft zu</label></li>
+        <li><label><input type="checkbox" name="stress_regulation_sonstiges_check" value="Sonstiges" class="toggle-sonstiges" data-target="stress_regulation_sonstiges"> Sonstiges</label></li>
+      </ul>
+      <input type="text" name="stress_regulation_sonstiges" class="sonstiges-input" placeholder="...">
+    </div>
+
+    <div class="question-block">
+      <div class="question-label"><span class="num">58.</span> Welche Hautreaktionen treten bei Stress am ehesten auf?</div>
+      <div class="hint">Mehrfachauswahl möglich</div>
+      <ul class="options-list">
+        <li><label><input type="checkbox" name="haut_bei_stress" value="Unreinheiten"> Unreinheiten</label></li>
+        <li><label><input type="checkbox" name="haut_bei_stress" value="Rötungen"> Rötungen</label></li>
+        <li><label><input type="checkbox" name="haut_bei_stress" value="Trockenheit"> Trockenheit</label></li>
+        <li><label><input type="checkbox" name="haut_bei_stress" value="Spannungsgefühl"> Spannungsgefühl</label></li>
+        <li><label><input type="checkbox" name="haut_bei_stress" value="Sensibilität"> Sensibilität</label></li>
+        <li><label><input type="checkbox" name="haut_bei_stress" value="Juckreiz"> Juckreiz</label></li>
+        <li><label><input type="checkbox" name="haut_bei_stress" value="nichts trifft zu"> nichts trifft zu</label></li>
+        <li><label><input type="checkbox" name="haut_bei_stress_sonstiges_check" value="Sonstiges" class="toggle-sonstiges" data-target="haut_bei_stress_sonstiges"> Sonstiges</label></li>
+      </ul>
+      <input type="text" name="haut_bei_stress_sonstiges" class="sonstiges-input" placeholder="...">
+    </div>
+
+    <div class="question-block">
+      <div class="question-label"><span class="num">59.</span> Wenn Dein Körper Dir durch Stress ein Signal sendet – wie würdest Du dieses Signal beschreiben?</div>
+      <textarea name="stress_signal" placeholder="..."></textarea>
+    </div>
+
+    <div class="question-block">
+      <div class="question-label"><span class="num">60.</span> Wie viel Zeit hast Du für Dich?</div>
+      <ul class="options-list">
+        <li><label><input type="radio" name="eigenzeit" value="täglich"> täglich</label></li>
+        <li><label><input type="radio" name="eigenzeit" value="mehrfach pro Woche"> mehrfach pro Woche</label></li>
+        <li><label><input type="radio" name="eigenzeit" value="selten"> selten</label></li>
+        <li><label><input type="radio" name="eigenzeit" value="kaum"> kaum</label></li>
+      </ul>
+    </div>
+
+    <div class="question-block">
+      <div class="question-label"><span class="num">61.</span> Gibt es Rituale, die Dir guttun? Wenn ja, welche?</div>
+      <textarea name="rituale" placeholder="..."></textarea>
+    </div>
+
+    <!-- ======== BEWEGUNG ======== -->
+    <div class="section-divider">Bewegung &amp; Natur</div>
+
+    <div class="question-block">
+      <div class="question-label"><span class="num">62.</span> Wie häufig bist Du draußen an der frischen Luft?</div>
+      <ul class="options-list">
+        <li><label><input type="radio" name="draussen_haeufigkeit" value="täglich"> täglich</label></li>
+        <li><label><input type="radio" name="draussen_haeufigkeit" value="3-5x pro Woche"> 3–5× pro Woche</label></li>
+        <li><label><input type="radio" name="draussen_haeufigkeit" value="1-2x pro Woche"> 1–2× pro Woche</label></li>
+        <li><label><input type="radio" name="draussen_haeufigkeit" value="selten"> selten</label></li>
+      </ul>
+    </div>
+
+    <div class="question-block">
+      <div class="question-label"><span class="num">63.</span> Wie lange bist Du durchschnittlich draußen?</div>
+      <ul class="options-list">
+        <li><label><input type="radio" name="draussen_dauer" value="unter 10 Minuten"> unter 10 Minuten</label></li>
+        <li><label><input type="radio" name="draussen_dauer" value="10-30 Minuten"> 10–30 Minuten</label></li>
+        <li><label><input type="radio" name="draussen_dauer" value="30-60 Minuten"> 30–60 Minuten</label></li>
+        <li><label><input type="radio" name="draussen_dauer" value="mehr als 1 Stunde"> mehr als 1 Stunde</label></li>
+      </ul>
+    </div>
+
+    <div class="question-block">
+      <div class="question-label"><span class="num">64.</span> Wie häufig bist Du sportlich aktiv?</div>
+      <ul class="options-list">
+        <li><label><input type="radio" name="sport_haeufigkeit" value="täglich"> täglich</label></li>
+        <li><label><input type="radio" name="sport_haeufigkeit" value="3-5x pro Woche"> 3–5× pro Woche</label></li>
+        <li><label><input type="radio" name="sport_haeufigkeit" value="1-2x pro Woche"> 1–2× pro Woche</label></li>
+        <li><label><input type="radio" name="sport_haeufigkeit" value="seltener"> seltener</label></li>
+        <li><label><input type="radio" name="sport_haeufigkeit" value="nie"> nie</label></li>
+      </ul>
+    </div>
+
+    <div class="question-block">
+      <div class="question-label"><span class="num">65.</span> Welche Bewegungsformen passen aktuell zu Dir?</div>
+      <div class="hint">Mehrfachauswahl möglich</div>
+      <ul class="options-list">
+        <li><label><input type="checkbox" name="sport_form" value="Krafttraining"> Krafttraining</label></li>
+        <li><label><input type="checkbox" name="sport_form" value="Yoga"> Yoga</label></li>
+        <li><label><input type="checkbox" name="sport_form" value="Pilates"> Pilates</label></li>
+        <li><label><input type="checkbox" name="sport_form" value="Laufen"> Laufen</label></li>
+        <li><label><input type="checkbox" name="sport_form" value="Schwimmen"> Schwimmen</label></li>
+        <li><label><input type="checkbox" name="sport_form" value="Tanz"> Tanz</label></li>
+        <li><label><input type="checkbox" name="sport_form" value="Gruppenkurse"> Gruppenkurse</label></li>
+        <li><label><input type="checkbox" name="sport_form_sonstiges_check" value="Sonstiges" class="toggle-sonstiges" data-target="sport_form_sonstiges"> Sonstiges</label></li>
+      </ul>
+      <input type="text" name="sport_form_sonstiges" class="sonstiges-input" placeholder="...">
+    </div>
+
+    <!-- ======== SCHLAF ======== -->
+    <div class="section-divider">Schlaf</div>
+
+    <div class="question-block">
+      <div class="question-label"><span class="num">66.</span> Wie würdest Du Deine Schlafqualität insgesamt beschreiben?</div>
+      <ul class="options-list">
+        <li><label><input type="radio" name="schlaf_qualitaet" value="sehr erholsam"> sehr erholsam</label></li>
+        <li><label><input type="radio" name="schlaf_qualitaet" value="gut"> gut</label></li>
+        <li><label><input type="radio" name="schlaf_qualitaet" value="mittel"> mittel</label></li>
+        <li><label><input type="radio" name="schlaf_qualitaet" value="eher unruhig"> eher unruhig</label></li>
+      </ul>
+    </div>
+
+    <div class="question-block">
+      <div class="question-label"><span class="num">67.</span> Wie viele Stunden schläfst Du durchschnittlich pro Nacht?</div>
+      <ul class="options-list">
+        <li><label><input type="radio" name="schlaf_stunden" value="weniger als 5 Stunden"> weniger als 5 Stunden</label></li>
+        <li><label><input type="radio" name="schlaf_stunden" value="5-6 Stunden"> 5–6 Stunden</label></li>
+        <li><label><input type="radio" name="schlaf_stunden" value="6-7 Stunden"> 6–7 Stunden</label></li>
+        <li><label><input type="radio" name="schlaf_stunden" value="7-8 Stunden"> 7–8 Stunden</label></li>
+        <li><label><input type="radio" name="schlaf_stunden" value="mehr als 8 Stunden"> mehr als 8 Stunden</label></li>
+      </ul>
+    </div>
+
+    <div class="question-block">
+      <div class="question-label"><span class="num">68.</span> Fühlst Du Dich morgens nach dem Aufwachen erholt?</div>
+      <ul class="options-list">
+        <li><label><input type="radio" name="schlaf_erholt" value="ja"> ja</label></li>
+        <li><label><input type="radio" name="schlaf_erholt" value="teilweise"> teilweise</label></li>
+        <li><label><input type="radio" name="schlaf_erholt" value="eher nicht"> eher nicht</label></li>
+      </ul>
+    </div>
+
+    <div class="question-block">
+      <div class="question-label"><span class="num">69.</span> Wie schnell schläfst Du in der Regel ein?</div>
+      <ul class="options-list">
+        <li><label><input type="radio" name="einschlafen" value="innerhalb von 10 Minuten"> innerhalb von 10 Minuten</label></li>
+        <li><label><input type="radio" name="einschlafen" value="innerhalb von 30 Minuten"> innerhalb von 30 Minuten</label></li>
+        <li><label><input type="radio" name="einschlafen" value="länger als 30 Minuten"> länger als 30 Minuten</label></li>
+      </ul>
+    </div>
+
+    <div class="question-block">
+      <div class="question-label"><span class="num">70.</span> Wachst Du nachts auf?</div>
+      <ul class="options-list">
+        <li><label><input type="radio" name="aufwachen" value="nein"> nein</label></li>
+        <li><label><input type="radio" name="aufwachen" value="gelegentlich"> gelegentlich</label></li>
+        <li><label><input type="radio" name="aufwachen" value="regelmäßig"> regelmäßig</label></li>
+      </ul>
+    </div>
+
+    <div class="question-block">
+      <div class="question-label"><span class="num">71.</span> Wenn Du nachts aufwachst: kannst Du anschließend wieder gut einschlafen?</div>
+      <ul class="options-list">
+        <li><label><input type="radio" name="wieder_einschlafen" value="ja"> ja</label></li>
+        <li><label><input type="radio" name="wieder_einschlafen" value="teilweise"> teilweise</label></li>
+        <li><label><input type="radio" name="wieder_einschlafen" value="eher nicht"> eher nicht</label></li>
+      </ul>
+    </div>
+
+    <div class="question-block">
+      <div class="question-label"><span class="num">72.</span> Nutzt Du Dein Handy abends im Bett?</div>
+      <ul class="options-list">
+        <li><label><input type="radio" name="handy_abends" value="ja, regelmäßig"> ja, regelmäßig</label></li>
+        <li><label><input type="radio" name="handy_abends" value="gelegentlich"> gelegentlich</label></li>
+        <li><label><input type="radio" name="handy_abends" value="selten"> selten</label></li>
+        <li><label><input type="radio" name="handy_abends" value="nie"> nie</label></li>
+      </ul>
+    </div>
+
+    <div class="question-block">
+      <div class="question-label"><span class="num">73.</span> Schaust Du abends noch fern?</div>
+      <ul class="options-list">
+        <li><label><input type="radio" name="fernsehen" value="ja, täglich"> ja, täglich</label></li>
+        <li><label><input type="radio" name="fernsehen" value="mehrmals pro Woche"> mehrmals pro Woche</label></li>
+        <li><label><input type="radio" name="fernsehen" value="selten"> selten</label></li>
+        <li><label><input type="radio" name="fernsehen" value="nie"> nie</label></li>
+      </ul>
+    </div>
+
+    <div class="question-block">
+      <div class="question-label"><span class="num">74.</span> Wie lange vor dem Einschlafen nutzt Du Bildschirmmedien?</div>
+      <ul class="options-list">
+        <li><label><input type="radio" name="bildschirm_vor_schlaf" value="bis direkt vor dem Schlafen"> bis direkt vor dem Schlafen</label></li>
+        <li><label><input type="radio" name="bildschirm_vor_schlaf" value="ca. 30 Minuten vorher"> ca. 30 Minuten vorher</label></li>
+        <li><label><input type="radio" name="bildschirm_vor_schlaf" value="1 Stunde vorher"> 1 Stunde vorher</label></li>
+        <li><label><input type="radio" name="bildschirm_vor_schlaf" value="länger als 1 Stunde vorher nicht mehr"> länger als 1 Stunde vorher nicht mehr</label></li>
+      </ul>
+    </div>
+
+    <div class="question-block">
+      <div class="question-label"><span class="num">75.</span> Wie würdest Du die Atmosphäre in Deinem Schlafzimmer beschreiben?</div>
+      <ul class="options-list">
+        <li><label><input type="radio" name="schlafzimmer" value="ruhig und entspannend"> ruhig und entspannend</label></li>
+        <li><label><input type="radio" name="schlafzimmer" value="funktional"> funktional</label></li>
+        <li><label><input type="radio" name="schlafzimmer" value="eher unruhig / aktivierend"> eher unruhig / aktivierend</label></li>
+      </ul>
+    </div>
+
+    <div class="question-block">
+      <div class="question-label"><span class="num">76.</span> Wie fühlt sich Dein Körper abends meist an?</div>
+      <ul class="options-list">
+        <li><label><input type="radio" name="koerper_abends" value="entspannt"> entspannt</label></li>
+        <li><label><input type="radio" name="koerper_abends" value="müde, aber innerlich unruhig"> müde, aber innerlich unruhig</label></li>
+        <li><label><input type="radio" name="koerper_abends" value="angespannt"> angespannt</label></li>
+      </ul>
+    </div>
+
+    <div class="question-block">
+      <div class="question-label"><span class="num">77.</span> Was beeinträchtigt Deinen Schlaf am ehesten?</div>
+      <div class="hint">Mehrfachauswahl möglich</div>
+      <ul class="options-list">
+        <li><label><input type="checkbox" name="schlaf_stoerung" value="Stress"> Stress</label></li>
+        <li><label><input type="checkbox" name="schlaf_stoerung" value="Gedanken / mentale Belastung"> Gedanken / mentale Belastung</label></li>
+        <li><label><input type="checkbox" name="schlaf_stoerung" value="späte Mahlzeiten"> späte Mahlzeiten</label></li>
+        <li><label><input type="checkbox" name="schlaf_stoerung" value="Koffein"> Koffein</label></li>
+        <li><label><input type="checkbox" name="schlaf_stoerung" value="Alkohol"> Alkohol</label></li>
+        <li><label><input type="checkbox" name="schlaf_stoerung" value="hormonelle Phasen"> hormonelle Phasen</label></li>
+        <li><label><input type="checkbox" name="schlaf_stoerung" value="unruhige Umgebung"> unruhige Umgebung</label></li>
+        <li><label><input type="checkbox" name="schlaf_stoerung" value="nichts trifft zu"> nichts trifft zu</label></li>
+        <li><label><input type="checkbox" name="schlaf_stoerung_sonstiges_check" value="Sonstiges" class="toggle-sonstiges" data-target="schlaf_stoerung_sonstiges"> Sonstiges</label></li>
+      </ul>
+      <input type="text" name="schlaf_stoerung_sonstiges" class="sonstiges-input" placeholder="...">
+    </div>
+
+    <div class="question-block">
+      <div class="question-label"><span class="num">78.</span> Wenn ja – welche?</div>
+      <input type="text" name="schlaf_stoerung_details" placeholder="...">
+    </div>
+
+    <!-- ======== ENERGIE ======== -->
+    <div class="section-divider">Energie &amp; Körperbewusstsein</div>
+
+    <div class="question-block">
+      <div class="question-label"><span class="num">79.</span> Wie ist Dein Energielevel im Alltag?</div>
+      <ul class="options-list">
+        <li><label><input type="radio" name="energie" value="stabil"> stabil</label></li>
+        <li><label><input type="radio" name="energie" value="schwankend"> schwankend</label></li>
+        <li><label><input type="radio" name="energie" value="häufig erschöpft"> häufig erschöpft</label></li>
+      </ul>
+    </div>
+
+    <div class="question-block">
+      <div class="question-label"><span class="num">80.</span> Zu welcher Tageszeit fühlst Du Dich am leistungsfähigsten?</div>
+      <ul class="options-list">
+        <li><label><input type="radio" name="energie_tageszeit" value="morgens"> morgens</label></li>
+        <li><label><input type="radio" name="energie_tageszeit" value="mittags"> mittags</label></li>
+        <li><label><input type="radio" name="energie_tageszeit" value="nachmittags"> nachmittags</label></li>
+        <li><label><input type="radio" name="energie_tageszeit" value="abends"> abends</label></li>
+      </ul>
+    </div>
+
+    <div class="question-block">
+      <div class="question-label"><span class="num">81.</span> Wie häufig bist Du erkältet oder infektanfällig?</div>
+      <ul class="options-list">
+        <li><label><input type="radio" name="infekt" value="selten"> selten</label></li>
+        <li><label><input type="radio" name="infekt" value="1-2x pro Jahr"> 1–2× pro Jahr</label></li>
+        <li><label><input type="radio" name="infekt" value="häufiger"> häufiger</label></li>
+        <li><label><input type="radio" name="infekt" value="hänge oft zwischen nicht ganz gesund & nicht ganz krank"> hänge oft zwischen „nicht ganz gesund & nicht ganz krank"</label></li>
+      </ul>
+    </div>
+
+    <div class="question-block">
+      <div class="question-label"><span class="num">82.</span> Wie lange brauchst Du nach Stressphasen, um Dich wieder stabil zu fühlen?</div>
+      <ul class="options-list">
+        <li><label><input type="radio" name="erholung_nach_stress" value="wenige Tage"> wenige Tage</label></li>
+        <li><label><input type="radio" name="erholung_nach_stress" value="1-2 Wochen"> 1–2 Wochen</label></li>
+        <li><label><input type="radio" name="erholung_nach_stress" value="länger"> länger</label></li>
+      </ul>
+    </div>
+
+    <div class="question-block">
+      <div class="question-label"><span class="num">83.</span> Wie gut nimmst Du die Signale Deines Körpers wahr?</div>
+      <ul class="options-list">
+        <li><label><input type="radio" name="koerpersignale" value="sehr gut"> sehr gut</label></li>
+        <li><label><input type="radio" name="koerpersignale" value="mittel"> mittel</label></li>
+        <li><label><input type="radio" name="koerpersignale" value="eher wenig"> eher wenig</label></li>
+      </ul>
+    </div>
+
+    <div class="question-block">
+      <div class="question-label"><span class="num">84.</span> Hörst Du im Alltag auf erste Warnzeichen?</div>
+      <ul class="options-list">
+        <li><label><input type="radio" name="warnzeichen" value="meistens"> meistens</label></li>
+        <li><label><input type="radio" name="warnzeichen" value="manchmal"> manchmal</label></li>
+        <li><label><input type="radio" name="warnzeichen" value="selten"> selten</label></li>
+      </ul>
+    </div>
+
+    <!-- ======== ABSCHLUSS ======== -->
+    <div class="section-divider">Ziele &amp; Wünsche</div>
+
+    <div class="question-block">
+      <div class="question-label"><span class="num">85.</span> In welchem Bereich wünschst Du Dir aktuell mehr Unterstützung?</div>
+      <div class="hint">Mehrfachauswahl möglich</div>
+      <ul class="options-list">
+        <li><label><input type="checkbox" name="unterstuetzung" value="Haut"> Haut</label></li>
+        <li><label><input type="checkbox" name="unterstuetzung" value="Energie"> Energie</label></li>
+        <li><label><input type="checkbox" name="unterstuetzung" value="Stressbalance"> Stressbalance</label></li>
+        <li><label><input type="checkbox" name="unterstuetzung" value="Schlaf"> Schlaf</label></li>
+        <li><label><input type="checkbox" name="unterstuetzung" value="Ernährung"> Ernährung</label></li>
+        <li><label><input type="checkbox" name="unterstuetzung" value="emotionale Stabilität"> emotionale Stabilität</label></li>
+      </ul>
+    </div>
+
+    <div class="question-block">
+      <div class="question-label"><span class="num">86.</span> Gibt es etwas, was Du noch ergänzen möchtest?</div>
+      <textarea name="ergaenzung" placeholder="Alles, was Dir noch wichtig ist..."></textarea>
+    </div>
+
+    <div class="question-block">
+      <div class="question-label"><span class="num">87.</span> Was erhoffst Du Dir von der Beratung?</div>
+      <div class="hint">Welche Veränderung wünschst Du Dir für Deine Haut? Für Dein Wohlbefinden? In welchem Bereich wünschst Du Dir mehr Balance?</div>
+      <textarea name="beratung_erwartung" placeholder="..."></textarea>
+    </div>
+
+    <div class="submit-area">
+      <button type="submit" class="btn-submit" id="submitBtn">Fragebogen absenden</button>
+    </div>
+
+  </form>
+
+  <!-- Erfolgsseite -->
+  <div class="success-screen" id="successScreen">
+    <div class="success-icon">✓</div>
+    <h2>Herzlichen Dank!</h2>
+    <p>Deine Antworten sind bei uns eingegangen.<br>
+    Wir freuen uns darauf, Dich individuell und ganzheitlich zu begleiten.</p>
+    <br>
+    <p style="font-size:13px; color:#aaa;">dein Idunn Team</p>
+  </div>
+
+</div>
+
+<script>
+  // Sonstiges-Felder ein-/ausblenden
+  document.querySelectorAll('.toggle-sonstiges').forEach(function(cb) {
+    cb.addEventListener('change', function() {
+      var target = document.querySelector('[name="' + this.dataset.target + '"]');
+      if (target) {
+        target.classList.toggle('visible', this.checked);
+        if (!this.checked) target.value = '';
+      }
+    });
+  });
+
+  // Formular absenden
+  document.getElementById('form').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    var btn = document.getElementById('submitBtn');
+    btn.disabled = true;
+    btn.textContent = 'Wird gesendet...';
+
+    var data = {};
+    var form = e.target;
+
+    // Text & Email Felder
+    form.querySelectorAll('input[type="text"], input[type="email"], textarea').forEach(function(el) {
+      if (el.name && !el.name.endsWith('_check')) {
+        data[el.name] = el.value.trim();
+      }
+    });
+
+    // Radio Buttons
+    form.querySelectorAll('input[type="radio"]:checked').forEach(function(el) {
+      data[el.name] = el.value;
+    });
+
+    // Checkboxes (Mehrfachauswahl)
+    var checkboxGroups = {};
+    form.querySelectorAll('input[type="checkbox"]').forEach(function(el) {
+      if (el.name.endsWith('_check')) return;
+      if (!checkboxGroups[el.name]) checkboxGroups[el.name] = [];
+      if (el.checked) checkboxGroups[el.name].push(el.value);
+    });
+    Object.assign(data, checkboxGroups);
+
+    try {
+      var resp = await fetch('/api/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      var result = await resp.json();
+      if (result.success) {
+        document.getElementById('form').style.display = 'none';
+        document.getElementById('successScreen').style.display = 'block';
+        window.scrollTo(0, 0);
+      } else {
+        alert('Fehler beim Senden. Bitte versuche es erneut.');
+        btn.disabled = false;
+        btn.textContent = 'Fragebogen absenden';
+      }
+    } catch(err) {
+      alert('Verbindungsfehler. Bitte prüfe deine Internetverbindung.');
+      btn.disabled = false;
+      btn.textContent = 'Fragebogen absenden';
+    }
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Idunn – Interner Bereich</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Georgia', serif; background: #f0ede8; color: #2c2c2c; min-height: 100vh; }
+
+  /* ---- Login ---- */
+  #loginScreen {
+    display: flex; align-items: center; justify-content: center;
+    min-height: 100vh; background: #2c2c2c;
+  }
+  .login-box {
+    background: #fff; padding: 48px 40px; border-radius: 4px; text-align: center; width: 340px;
+  }
+  .login-box h1 { font-size: 22px; letter-spacing: 4px; margin-bottom: 6px; color: #2c2c2c; }
+  .login-box p { font-size: 12px; color: #999; letter-spacing: 2px; margin-bottom: 32px; text-transform: uppercase; }
+  .login-box input {
+    width: 100%; border: 1px solid #ddd; border-radius: 3px; padding: 12px 14px;
+    font-size: 15px; font-family: inherit; margin-bottom: 16px;
+  }
+  .login-box input:focus { outline: none; border-color: #8c6e5a; }
+  .login-box button {
+    width: 100%; background: #2c2c2c; color: #e8d5c4; border: none; padding: 14px;
+    font-size: 12px; letter-spacing: 3px; text-transform: uppercase; font-family: inherit;
+    cursor: pointer; border-radius: 3px;
+  }
+  .login-box button:hover { background: #4a3f35; }
+  .login-error { color: #c0392b; font-size: 13px; margin-top: 10px; display: none; }
+
+  /* ---- App ---- */
+  #app { display: none; }
+
+  .top-bar {
+    background: #2c2c2c; color: #e8d5c4; padding: 16px 28px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .top-bar h1 { font-size: 18px; letter-spacing: 4px; font-weight: normal; }
+  .top-bar span { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; opacity: 0.6; }
+  .logout-btn {
+    background: none; border: 1px solid #e8d5c4; color: #e8d5c4; padding: 6px 14px;
+    font-size: 11px; letter-spacing: 2px; cursor: pointer; border-radius: 2px; font-family: inherit;
+  }
+  .logout-btn:hover { background: #4a3f35; }
+
+  .main-layout { display: flex; height: calc(100vh - 56px); }
+
+  /* ---- Sidebar ---- */
+  .sidebar {
+    width: 300px; flex-shrink: 0; background: #fff; border-right: 1px solid #e4ddd5;
+    overflow-y: auto; display: flex; flex-direction: column;
+  }
+  .sidebar-header {
+    padding: 20px 20px 14px; border-bottom: 1px solid #e4ddd5;
+    font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: #999;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  #clientCount { background: #e8d5c4; color: #2c2c2c; border-radius: 10px; padding: 2px 8px; font-size: 11px; }
+  .client-list { flex: 1; }
+  .client-item {
+    padding: 14px 20px; border-bottom: 1px solid #f0ede8; cursor: pointer;
+    transition: background 0.15s;
+  }
+  .client-item:hover { background: #faf8f5; }
+  .client-item.active { background: #f5f0eb; border-left: 3px solid #8c6e5a; }
+  .client-name { font-size: 15px; font-weight: bold; margin-bottom: 3px; }
+  .client-email { font-size: 12px; color: #999; margin-bottom: 3px; }
+  .client-date { font-size: 11px; color: #bbb; }
+  .client-badge {
+    display: inline-block; font-size: 10px; padding: 2px 6px; border-radius: 10px;
+    background: #e8f5e9; color: #2e7d32; margin-top: 4px; letter-spacing: 1px;
+  }
+  .client-badge.no-proto { background: #fff3e0; color: #e65100; }
+  .empty-list { padding: 40px 20px; text-align: center; color: #bbb; font-size: 14px; }
+
+  /* ---- Detail Panel ---- */
+  .detail-panel {
+    flex: 1; overflow-y: auto; padding: 28px 32px;
+  }
+  .welcome-screen {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    height: 100%; color: #ccc; text-align: center;
+  }
+  .welcome-screen h2 { font-size: 20px; letter-spacing: 3px; margin-bottom: 12px; font-weight: normal; }
+  .welcome-screen p { font-size: 14px; }
+
+  .client-header { margin-bottom: 28px; }
+  .client-header h2 { font-size: 22px; letter-spacing: 2px; margin-bottom: 6px; }
+  .client-header .meta { font-size: 13px; color: #999; }
+
+  /* Tabs */
+  .tabs { display: flex; gap: 4px; margin-bottom: 24px; border-bottom: 2px solid #e4ddd5; }
+  .tab-btn {
+    padding: 10px 20px; font-size: 13px; cursor: pointer; border: none; background: none;
+    font-family: inherit; color: #999; letter-spacing: 1px; border-bottom: 2px solid transparent;
+    margin-bottom: -2px; transition: color 0.2s;
+  }
+  .tab-btn:hover { color: #2c2c2c; }
+  .tab-btn.active { color: #2c2c2c; border-bottom-color: #8c6e5a; font-weight: bold; }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  /* Antworten */
+  .section-title {
+    font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: #b09080;
+    margin: 28px 0 14px; padding-bottom: 6px; border-bottom: 1px solid #e4ddd5;
+  }
+  .section-title:first-child { margin-top: 0; }
+  .answer-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .answer-item { background: #fff; border: 1px solid #e4ddd5; border-radius: 4px; padding: 14px 16px; }
+  .answer-item.full { grid-column: 1 / -1; }
+  .answer-label { font-size: 11px; color: #999; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+  .answer-value { font-size: 14px; color: #2c2c2c; line-height: 1.5; }
+  .answer-value.empty { color: #ccc; font-style: italic; font-size: 13px; }
+  .tag-list { display: flex; flex-wrap: wrap; gap: 5px; }
+  .tag {
+    background: #f5f0eb; color: #4a3f35; font-size: 12px; padding: 3px 8px; border-radius: 10px;
+  }
+
+  /* Protokoll */
+  .protokoll-area { background: #fff; border: 1px solid #e4ddd5; border-radius: 4px; padding: 24px; }
+  .protokoll-area h3 { font-size: 15px; margin-bottom: 16px; letter-spacing: 1px; }
+  .protokoll-area textarea {
+    width: 100%; min-height: 280px; border: 1px solid #ddd; border-radius: 3px;
+    padding: 14px; font-size: 14px; font-family: inherit; line-height: 1.7; resize: vertical;
+    color: #2c2c2c; background: #fdfcfb;
+  }
+  .protokoll-area textarea:focus { outline: none; border-color: #8c6e5a; }
+  .protokoll-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 14px; }
+  .save-btn {
+    background: #2c2c2c; color: #e8d5c4; border: none; padding: 12px 32px;
+    font-size: 12px; letter-spacing: 2px; text-transform: uppercase; font-family: inherit;
+    cursor: pointer; border-radius: 3px;
+  }
+  .save-btn:hover { background: #4a3f35; }
+  .save-btn:disabled { background: #aaa; cursor: default; }
+  .save-status { font-size: 13px; color: #2e7d32; }
+  .protokoll-meta { font-size: 12px; color: #bbb; margin-bottom: 12px; }
+
+  /* Stress Level Visual */
+  .stress-bar { display: flex; gap: 3px; margin-top: 4px; }
+  .stress-dot {
+    width: 18px; height: 18px; border-radius: 50%; background: #f0ede8; border: 1px solid #ddd;
+    font-size: 10px; display: flex; align-items: center; justify-content: center; color: #ccc;
+  }
+  .stress-dot.filled { background: #8c6e5a; color: #fff; border-color: #8c6e5a; }
+  .stress-dot.high { background: #c0392b; border-color: #c0392b; }
+
+  @media (max-width: 800px) {
+    .main-layout { flex-direction: column; }
+    .sidebar { width: 100%; height: 200px; }
+    .answer-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="loginScreen">
+  <div class="login-box">
+    <h1>Idunn</h1>
+    <p>Interner Bereich</p>
+    <input type="password" id="passInput" placeholder="Passwort" onkeydown="if(event.key==='Enter') login()">
+    <button onclick="login()">Anmelden</button>
+    <div class="login-error" id="loginError">Falsches Passwort</div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <div class="top-bar">
+    <h1>Idunn — Anamnesen</h1>
+    <div style="display:flex;align-items:center;gap:16px;">
+      <span id="topDate"></span>
+      <button class="logout-btn" onclick="logout()">Abmelden</button>
+    </div>
+  </div>
+  <div class="main-layout">
+    <!-- Sidebar: Kundenliste -->
+    <div class="sidebar">
+      <div class="sidebar-header">
+        Kunden <span id="clientCount">0</span>
+      </div>
+      <div class="client-list" id="clientList">
+        <div class="empty-list">Noch keine Einsendungen</div>
+      </div>
+    </div>
+
+    <!-- Detail-Panel -->
+    <div class="detail-panel" id="detailPanel">
+      <div class="welcome-screen">
+        <h2>Willkommen</h2>
+        <p>Wähle einen Kunden aus der Liste</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const PASS = 'idunn2024'; // muss mit server.py übereinstimmen
+let currentId = null;
+let autosaveTimer = null;
+
+// ---- Login ----
+function login() {
+  var val = document.getElementById('passInput').value;
+  if (val === PASS) {
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    loadClients();
+    document.getElementById('topDate').textContent = new Date().toLocaleDateString('de-DE', {day:'2-digit', month:'long', year:'numeric'});
+  } else {
+    document.getElementById('loginError').style.display = 'block';
+  }
+}
+
+function logout() {
+  document.getElementById('loginScreen').style.display = 'flex';
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('passInput').value = '';
+  document.getElementById('loginError').style.display = 'none';
+}
+
+// ---- Kundenliste laden ----
+async function loadClients() {
+  try {
+    var resp = await fetch('/api/submissions');
+    var clients = await resp.json();
+    document.getElementById('clientCount').textContent = clients.length;
+    var list = document.getElementById('clientList');
+    if (clients.length === 0) {
+      list.innerHTML = '<div class="empty-list">Noch keine Einsendungen</div>';
+      return;
+    }
+    list.innerHTML = clients.map(function(c) {
+      var hasProto = c.protokoll && c.protokoll.trim().length > 0;
+      var date = new Date(c.created_at).toLocaleDateString('de-DE', {day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit'});
+      return '<div class="client-item" id="item-' + c.id + '" onclick="loadClient(' + c.id + ')">' +
+        '<div class="client-name">' + esc(c.name || 'Unbekannt') + '</div>' +
+        '<div class="client-email">' + esc(c.email || '') + '</div>' +
+        '<div class="client-date">' + date + '</div>' +
+        '<span class="client-badge ' + (hasProto ? '' : 'no-proto') + '">' +
+        (hasProto ? '✓ Protokoll' : '◯ Kein Protokoll') + '</span>' +
+        '</div>';
+    }).join('');
+  } catch(e) {
+    document.getElementById('clientList').innerHTML = '<div class="empty-list">Fehler beim Laden</div>';
+  }
+}
+
+// ---- Einzelnen Kunden laden ----
+async function loadClient(id) {
+  currentId = id;
+  // Aktiven Status setzen
+  document.querySelectorAll('.client-item').forEach(function(el) { el.classList.remove('active'); });
+  var item = document.getElementById('item-' + id);
+  if (item) item.classList.add('active');
+
+  try {
+    var resp = await fetch('/api/submission/' + id);
+    var client = await resp.json();
+    renderDetail(client);
+  } catch(e) {
+    document.getElementById('detailPanel').innerHTML = '<p style="padding:40px;color:#999;">Fehler beim Laden</p>';
+  }
+}
+
+// ---- Detail-Ansicht rendern ----
+function renderDetail(client) {
+  var d = client.data;
+  var date = new Date(client.created_at).toLocaleDateString('de-DE', {day:'2-digit', month:'long', year:'numeric', hour:'2-digit', minute:'2-digit'});
+
+  var html = '<div class="client-header">' +
+    '<h2>' + esc(d.name || 'Unbekannt') + '</h2>' +
+    '<div class="meta">' + esc(d.email || '') + ' &nbsp;·&nbsp; Eingegangen: ' + date + '</div>' +
+    '</div>';
+
+  html += '<div class="tabs">' +
+    '<button class="tab-btn active" onclick="switchTab(\'antworten\', this)">Antworten</button>' +
+    '<button class="tab-btn" onclick="switchTab(\'protokoll\', this)">Gesprächsprotokoll</button>' +
+    '</div>';
+
+  // ---- TAB: ANTWORTEN ----
+  html += '<div class="tab-content active" id="tab-antworten">';
+
+  html += section('Persönliche Daten');
+  html += grid([
+    answerItem('E-Mail', d.email),
+    answerItem('Name / Ansprache', d.name),
+    answerItem('Alter', d.alter)
+  ]);
+
+  html += section('Alltag & Umgebung');
+  html += grid([
+    answerItem('Arbeitsumgebung', tags(d.umgebung, d.umgebung_sonstiges), true),
+    answerItem('Gefühl nach Arbeit', d.gefuehl_nach_arbeit),
+    answerItem('Alltag in 2-3 Worten', d.alltag_beschreibung)
+  ]);
+
+  html += section('Hautbild – Selbstwahrnehmung');
+  html += grid([
+    answerItem('Hautbeschreibung', d.haut_beschreibung, true),
+    answerItem('Hautbild-Merkmale', tags(d.hautbild), true),
+    answerItem('Reaktion auf Einflüsse', tags(d.haut_reaktion, d.haut_reaktion_sonstiges), true),
+    answerItem('Emotionale Belastung', d.haut_emotion),
+    answerItem('Reagierende Bereiche', tags(d.haut_bereiche, d.haut_bereiche_sonstiges), true),
+    answerItem('Verschlechterung bei', tags(d.haut_verschlechterung), true),
+    answerItem('Beruhigung nach Reizung', d.haut_beruhigung),
+    answerItem('Sensibilitäten / Allergien', tags(d.sensibilitaeten, d.sensibilitaeten_sonstiges), true),
+    answerItem('Was verbessern?', d.haut_verbesserung, true),
+    answerItem('Merkmale', tags(d.haut_merkmale), true),
+    answerItem('Gefühl der Haut', d.haut_gefuehl),
+    answerItem('Stressstellen', d.haut_stressstellen),
+    answerItem('Was tut der Haut gut?', d.haut_gutes, true)
+  ]);
+
+  html += section('Pflegeprodukte & Routinen');
+  html += grid([
+    answerItem('Reinigung', tags(d.reinigung, d.reinigung_sonstiges), true),
+    answerItem('Seren', tags(d.seren, d.seren_sonstiges), true),
+    answerItem('Cremeprodukte', tags(d.creme, d.creme_sonstiges), true),
+    answerItem('Pflege morgens', d.pflege_morgens),
+    answerItem('Pflege abends', d.pflege_abends)
+  ]);
+
+  html += section('Ernährung – Darm – Hormone');
+  html += grid([
+    answerItem('Trinkmenge/Tag', d.trinkmenge),
+    answerItem('Kaffee/Tag', d.kaffee),
+    answerItem('Softdrinks/Woche', d.softdrinks),
+    answerItem('Säfte/Woche', d.saefte),
+    answerItem('Alkohol', d.alkohol),
+    answerItem('Frisches Obst', d.obst_haeufigkeit + (d.obst_portionen ? ' · ' + d.obst_portionen + ' Portionen' : '')),
+    answerItem('Frisches Gemüse', d.gemuese_haeufigkeit + (d.gemuese_portionen ? ' · ' + d.gemuese_portionen + ' Portionen' : '')),
+    answerItem('Ballaststoffe', d.ballaststoffe),
+    answerItem('Gebratenes', d.gebraten),
+    answerItem('Frittiertes', d.frittiert),
+    answerItem('Weißbrot', d.weissbrot),
+    answerItem('Vollkorn', d.vollkorn),
+    answerItem('Süßes', d.suesswaren),
+    answerItem('Heißhunger auf', d.heisshunger),
+    answerItem('Tierische Lebensmittel', d.tierisch),
+    answerItem('Nahrungsergänzung', d.nahrungsergaenzung),
+    answerItem('NEM – was?', d.nahrungsergaenzung_was, true),
+    answerItem('NEM – wofür?', d.nahrungsergaenzung_wofuer, true),
+    answerItem('Verdauung', d.verdauung),
+    answerItem('Blähungen / Völlegefühl', d.blaehungen),
+    answerItem('Lebensmittel-Reaktion', d.lebensmittel_reaktion),
+    answerItem('Regelmäßiger Zyklus', d.zyklus),
+    answerItem('Haut empfindlich wann', d.haut_empfindlich_wann),
+    answerItem('Zyklus-Einfluss auf Haut', d.zyklus_einfluss),
+    answerItem('Hormonelle Verhütung', d.verhuetung)
+  ]);
+
+  html += section('Lebensstil – Stress');
+  var stressVal = parseInt(d.stresslevel) || 0;
+  var stressDots = '<div class="stress-bar">';
+  for (var i = 1; i <= 10; i++) {
+    var cls = i <= stressVal ? (stressVal >= 7 ? 'filled high' : 'filled') : '';
+    stressDots += '<div class="stress-dot ' + cls + '">' + i + '</div>';
+  }
+  stressDots += '</div>';
+
+  html += '<div class="answer-grid">';
+  html += '<div class="answer-item full"><div class="answer-label">Stresslevel (1–10)</div>' +
+    (d.stresslevel ? stressDots + '<div style="margin-top:6px;font-size:14px;color:#2c2c2c;">' + d.stresslevel + ' / 10</div>' : '<div class="answer-value empty">–</div>') +
+    '</div>';
+  html += rawAnswerItem('Stress zuerst spürbar', tags(d.stress_koerper, d.stress_koerper_sonstiges), true);
+  html += rawAnswerItem('Art des Stresses', tags(d.stress_art, d.stress_art_sonstiges), true);
+  html += rawAnswerItem('Stresssituationen', tags(d.stress_situation, d.stress_situation_sonstiges), true);
+  html += rawAnswerItem('Körperreaktion bei Stress', tags(d.stress_reaktion, d.stress_reaktion_sonstiges), true);
+  html += rawAnswerItem('Stress regulieren durch', tags(d.stress_regulation, d.stress_regulation_sonstiges), true);
+  html += rawAnswerItem('Haut bei Stress', tags(d.haut_bei_stress, d.haut_bei_stress_sonstiges), true);
+  html += rawAnswerItem('Stress-Signal beschreiben', d.stress_signal ? '<div class="answer-value">' + esc(d.stress_signal) + '</div>' : '<div class="answer-value empty">–</div>', true);
+  html += rawAnswerItem('Zeit für sich', d.eigenzeit ? '<div class="answer-value">' + esc(d.eigenzeit) + '</div>' : '<div class="answer-value empty">–</div>');
+  html += rawAnswerItem('Rituale', d.rituale ? '<div class="answer-value">' + esc(d.rituale) + '</div>' : '<div class="answer-value empty">–</div>', true);
+  html += '</div>';
+
+  html += section('Bewegung & Natur');
+  html += grid([
+    answerItem('Draußen wie oft', d.draussen_haeufigkeit),
+    answerItem('Draußen wie lange', d.draussen_dauer),
+    answerItem('Sport wie oft', d.sport_haeufigkeit),
+    answerItem('Bewegungsformen', tags(d.sport_form, d.sport_form_sonstiges), true)
+  ]);
+
+  html += section('Schlaf');
+  html += grid([
+    answerItem('Schlafqualität', d.schlaf_qualitaet),
+    answerItem('Schlafstunden', d.schlaf_stunden),
+    answerItem('Morgens erholt', d.schlaf_erholt),
+    answerItem('Einschlafen', d.einschlafen),
+    answerItem('Nachts aufwachen', d.aufwachen),
+    answerItem('Wieder einschlafen', d.wieder_einschlafen),
+    answerItem('Handy abends', d.handy_abends),
+    answerItem('Fernsehen abends', d.fernsehen),
+    answerItem('Bildschirm vor Schlaf', d.bildschirm_vor_schlaf),
+    answerItem('Schlafzimmer', d.schlafzimmer),
+    answerItem('Körper abends', d.koerper_abends),
+    answerItem('Schlaf beeinträchtigt durch', tags(d.schlaf_stoerung, d.schlaf_stoerung_sonstiges), true),
+    answerItem('Details Schlafstörung', d.schlaf_stoerung_details)
+  ]);
+
+  html += section('Energie & Körperbewusstsein');
+  html += grid([
+    answerItem('Energielevel', d.energie),
+    answerItem('Leistungsfähig wann', d.energie_tageszeit),
+    answerItem('Infektanfälligkeit', d.infekt),
+    answerItem('Erholung nach Stress', d.erholung_nach_stress),
+    answerItem('Körpersignale wahrnehmen', d.koerpersignale),
+    answerItem('Auf Warnzeichen hören', d.warnzeichen)
+  ]);
+
+  html += section('Ziele & Wünsche');
+  html += grid([
+    answerItem('Mehr Unterstützung bei', tags(d.unterstuetzung), true),
+    answerItem('Ergänzungen', d.ergaenzung, true),
+    answerItem('Wünsche & Erwartungen', d.beratung_erwartung, true)
+  ]);
+
+  html += '</div>'; // tab-antworten
+
+  // ---- TAB: PROTOKOLL ----
+  var protoMeta = client.protokoll_updated_at ? 'Zuletzt gespeichert: ' + client.protokoll_updated_at : '';
+  html += '<div class="tab-content" id="tab-protokoll">' +
+    '<div class="protokoll-area">' +
+    '<h3>Gesprächsprotokoll</h3>' +
+    (protoMeta ? '<div class="protokoll-meta">' + esc(protoMeta) + '</div>' : '') +
+    '<textarea id="protokollText" placeholder="Notizen zum Gespräch, Empfehlungen, Beobachtungen...">' +
+    esc(client.protokoll || '') + '</textarea>' +
+    '<div class="protokoll-footer">' +
+    '<span class="save-status" id="saveStatus"></span>' +
+    '<button class="save-btn" id="saveBtn" onclick="saveProtokolll()">Speichern</button>' +
+    '</div>' +
+    '</div>' +
+    '</div>';
+
+  document.getElementById('detailPanel').innerHTML = html;
+
+  // Autosave bei Eingabe
+  var textarea = document.getElementById('protokollText');
+  if (textarea) {
+    textarea.addEventListener('input', function() {
+      clearTimeout(autosaveTimer);
+      document.getElementById('saveStatus').textContent = '';
+      autosaveTimer = setTimeout(saveProtokolll, 3000);
+    });
+  }
+}
+
+// Tab wechseln
+function switchTab(name, btn) {
+  document.querySelectorAll('.tab-content').forEach(function(el) { el.classList.remove('active'); });
+  document.querySelectorAll('.tab-btn').forEach(function(el) { el.classList.remove('active'); });
+  var tc = document.getElementById('tab-' + name);
+  if (tc) tc.classList.add('active');
+  btn.classList.add('active');
+}
+
+// Protokoll speichern
+async function saveProtokolll() {
+  if (!currentId) return;
+  var btn = document.getElementById('saveBtn');
+  var status = document.getElementById('saveStatus');
+  var text = document.getElementById('protokollText').value;
+  if (btn) btn.disabled = true;
+  try {
+    await fetch('/api/submission/' + currentId + '/protokoll', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ protokoll: text })
+    });
+    if (status) status.textContent = '✓ Gespeichert';
+    setTimeout(function() { if (status) status.textContent = ''; }, 3000);
+    // Kundenliste aktualisieren
+    loadClients().then(function() {
+      var item = document.getElementById('item-' + currentId);
+      if (item) item.classList.add('active');
+    });
+  } catch(e) {
+    if (status) status.textContent = 'Fehler beim Speichern';
+  }
+  if (btn) btn.disabled = false;
+}
+
+// ---- Hilfsfunktionen ----
+function esc(str) {
+  if (!str) return '';
+  return String(str)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/\n/g, '<br>');
+}
+
+function section(title) {
+  return '<div class="section-title">' + title + '</div>';
+}
+
+function tags(arr, extra) {
+  var items = [];
+  if (Array.isArray(arr)) items = arr.slice();
+  else if (arr) items = [arr];
+  if (extra && extra.trim()) items.push(extra.trim());
+  if (items.length === 0) return '<div class="answer-value empty">–</div>';
+  return '<div class="tag-list">' + items.map(function(t) {
+    return '<span class="tag">' + esc(t) + '</span>';
+  }).join('') + '</div>';
+}
+
+function answerItem(label, value, full) {
+  var isEmpty = !value || (typeof value === 'string' && value.trim() === '') || (Array.isArray(value) && value.length === 0);
+  var valHtml = '';
+  if (typeof value === 'string' && value.startsWith('<')) {
+    valHtml = value;
+  } else if (isEmpty) {
+    valHtml = '<div class="answer-value empty">–</div>';
+  } else {
+    valHtml = '<div class="answer-value">' + esc(String(value)) + '</div>';
+  }
+  return '<div class="answer-item' + (full ? ' full' : '') + '">' +
+    '<div class="answer-label">' + label + '</div>' + valHtml + '</div>';
+}
+
+function rawAnswerItem(label, valueHtml, full) {
+  return '<div class="answer-item' + (full ? ' full' : '') + '">' +
+    '<div class="answer-label">' + label + '</div>' + valueHtml + '</div>';
+}
+
+function grid(items) {
+  return '<div class="answer-grid">' + items.join('') + '</div>';
+}
+
+// Enter-Taste beim Login
+document.getElementById('passInput').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') login();
+});
+</script>
+</body>
+</html>
