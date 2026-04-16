@@ -131,7 +131,7 @@ Empfohlene Pflege: {pflege or '–'}
 Erstelle eine persönliche Auswertung für {name}. Füge am Ende eine übersichtliche Produktliste mit direkten Links und Rabattcodes ein."""
 
     payload = json.dumps({
-        "model": "claude-sonnet-4-6",
+        "model": "claude-3-5-sonnet-20241022",
         "max_tokens": 1500,
         "system": RUNA_SYSTEM,
         "messages": [{"role": "user", "content": user_msg}]
@@ -191,6 +191,14 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             self.api_get_submission(sub_id)
         elif path == "/api/check":
             self.send_json({"status": "ok"})
+        elif path == "/api/debug":
+            key = ANTHROPIC_API_KEY
+            self.send_json({
+                "api_key_set": bool(key),
+                "api_key_length": len(key),
+                "api_key_preview": key[:15] + "..." if len(key) > 15 else key,
+                "data_dir": DATA_DIR
+            })
         else:
             super().do_GET()
 
@@ -330,8 +338,12 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             protokoll = row.get("protokoll", "")
 
             if ANTHROPIC_API_KEY:
-                text = call_claude(name, answers_text, supplements, pflege, protokoll)
-                self.send_json({"success": True, "auswertung": text, "mode": "api"})
+                try:
+                    text = call_claude(name, answers_text, supplements, pflege, protokoll)
+                    self.send_json({"success": True, "auswertung": text, "mode": "api"})
+                except Exception as api_err:
+                    self.send_json({"success": False, "error": f"Claude API Fehler: {str(api_err)}"}, 500)
+                    return
             else:
                 prompt = f"""{RUNA_SYSTEM}
 
@@ -371,3 +383,4 @@ if __name__ == "__main__":
     with socketserver.TCPServer(("0.0.0.0", PORT), Handler) as httpd:
         httpd.allow_reuse_address = True
         httpd.serve_forever()
+
