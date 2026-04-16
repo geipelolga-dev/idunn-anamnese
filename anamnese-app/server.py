@@ -19,7 +19,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.environ.get("DATA_DIR", os.path.join(BASE_DIR, "data"))
 DB_PATH = os.path.join(DATA_DIR, "anamnese.db")
 INTERN_PASSWORT = os.environ.get("INTERN_PASSWORT", "idunn2024")
-ANTHROPIC_API_KEY = os.environ.get("ANTHROPIC_API_KEY", "")
+ANTHROPIC_API_KEY = os.environ.get("ANTHROPIC_API_KEY", "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")
 
 RUNA_SYSTEM = """Du bist Runa, das interne KI-Beratungssystem von skaadi® holistic beauty (Olga Geipel). Du unterstützt bei der Erstellung ganzheitlicher, persönlicher Kundenauswertungen. STIL: Warm, persönlich, du-Form. Wie eine beste Freundin mit Expertenwissen. Fließende Absätze mit Überschriften. Keine Spiegelstrich-Listen. Max. 400 Wörter. Immer erklären WARUM (Zusammenhang Haut/Körper/Nährstoffe).
 
