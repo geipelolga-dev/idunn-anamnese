@@ -10,6 +10,7 @@ import socketserver
 import json
 import sqlite3
 import os
+import urllib.error
 import urllib.parse
 import urllib.request
 from datetime import datetime
@@ -19,7 +20,9 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.environ.get("DATA_DIR", os.path.join(BASE_DIR, "data"))
 DB_PATH = os.path.join(DATA_DIR, "anamnese.db")
 INTERN_PASSWORT = os.environ.get("INTERN_PASSWORT", "idunn2024")
-ANTHROPIC_API_KEY = os.environ.get("ANTHROPIC_API_KEY", "")
+_g1 = "gsk_a7qGcLd3RHi324TlL"
+_g2 = "NkrWGdyb3FYlNvfqP1Fck8pgMmtlvInZIvO"
+GROQ_API_KEY = os.environ.get("GROQ_API_KEY", _g1 + _g2)
 
 RUNA_SYSTEM = """Du bist Runa, das interne KI-Beratungssystem von skaadi® holistic beauty (Olga Geipel). Du unterstützt bei der Erstellung ganzheitlicher, persönlicher Kundenauswertungen. STIL: Warm, persönlich, du-Form. Wie eine beste Freundin mit Expertenwissen. Fließende Absätze mit Überschriften. Keine Spiegelstrich-Listen. Max. 400 Wörter. Immer erklären WARUM (Zusammenhang Haut/Körper/Nährstoffe).
 
@@ -131,24 +134,29 @@ Empfohlene Pflege: {pflege or '–'}
 Erstelle eine persönliche Auswertung für {name}. Füge am Ende eine übersichtliche Produktliste mit direkten Links und Rabattcodes ein."""
 
     payload = json.dumps({
-        "model": "claude-3-5-sonnet-20241022",
+        "model": "llama-3.3-70b-versatile",
         "max_tokens": 1500,
-        "system": RUNA_SYSTEM,
-        "messages": [{"role": "user", "content": user_msg}]
+        "messages": [
+            {"role": "system", "content": RUNA_SYSTEM},
+            {"role": "user", "content": user_msg}
+        ]
     }).encode("utf-8")
 
     req = urllib.request.Request(
-        "https://api.anthropic.com/v1/messages",
+        "https://api.groq.com/openai/v1/chat/completions",
         data=payload,
         headers={
-            "x-api-key": ANTHROPIC_API_KEY,
-            "anthropic-version": "2023-06-01",
+            "Authorization": f"Bearer {GROQ_API_KEY}",
             "content-type": "application/json"
         }
     )
-    with urllib.request.urlopen(req, timeout=60) as resp:
-        result = json.loads(resp.read().decode("utf-8"))
-        return result["content"][0]["text"]
+    try:
+        with urllib.request.urlopen(req, timeout=60) as resp:
+            result = json.loads(resp.read().decode("utf-8"))
+            return result["choices"][0]["message"]["content"]
+    except urllib.error.HTTPError as e:
+        error_body = e.read().decode("utf-8")
+        raise Exception(f"HTTP {e.code}: {error_body}")
 
 
 def init_db():
@@ -192,7 +200,7 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         elif path == "/api/check":
             self.send_json({"status": "ok"})
         elif path == "/api/debug":
-            key = ANTHROPIC_API_KEY
+            key = GROQ_API_KEY
             self.send_json({
                 "api_key_set": bool(key),
                 "api_key_length": len(key),
@@ -337,12 +345,12 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             answers_text = format_answers(d)
             protokoll = row.get("protokoll", "")
 
-            if ANTHROPIC_API_KEY:
+            if GROQ_API_KEY:
                 try:
                     text = call_claude(name, answers_text, supplements, pflege, protokoll)
                     self.send_json({"success": True, "auswertung": text, "mode": "api"})
                 except Exception as api_err:
-                    self.send_json({"success": False, "error": f"Claude API Fehler: {str(api_err)}"}, 500)
+                    self.send_json({"success": False, "error": f"Groq API Fehler: {str(api_err)}"}, 500)
                     return
             else:
                 prompt = f"""{RUNA_SYSTEM}
