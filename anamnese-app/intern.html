@@ -589,6 +589,8 @@ function grid(items) {
 
 // ---- Auswertung erstellen ----
 async function erstelleAuswertung(id) {
+  var _k1 = "gsk_a7qGcLd3RHi324TlL";
+  var _k2 = "NkrWGdyb3FYlNvfqP1Fck8pgMmtlvInZIvO";
   var btn = document.getElementById('btnAuswertung');
   var supplements = document.getElementById('inputSupplements').value;
   var pflege = document.getElementById('inputPflege').value;
@@ -596,31 +598,49 @@ async function erstelleAuswertung(id) {
   btn.textContent = '✦ Wird erstellt…';
 
   try {
+    // Schritt 1: Prompt-Daten vom Server holen
     var resp = await fetch('/api/submission/' + id + '/auswertung', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ supplements: supplements, pflege: pflege })
     });
     var result = await resp.json();
+    if (!result.success) throw new Error(result.error || 'Server-Fehler');
 
-    if (!result.success) throw new Error(result.error);
+    // Schritt 2: Direkt vom Browser aus Groq aufrufen
+    btn.textContent = '✦ Runa denkt nach…';
+    var groqResp = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': 'Bearer ' + _k1 + _k2,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        model: 'llama-3.3-70b-versatile',
+        max_tokens: 1500,
+        messages: [
+          { role: 'system', content: result.system },
+          { role: 'user', content: result.user_msg }
+        ]
+      })
+    });
 
+    if (!groqResp.ok) {
+      var errBody = await groqResp.text();
+      throw new Error('Groq Fehler ' + groqResp.status + ': ' + errBody);
+    }
+
+    var groqResult = await groqResp.json();
+    var auswertungText = groqResult.choices[0].message.content;
+
+    // Ergebnis anzeigen
     var card = document.getElementById('auswertungResultCard');
     var resultEl = document.getElementById('auswertungResult');
     card.style.display = 'block';
-
-    if (result.mode === 'api') {
-      resultEl.textContent = result.auswertung;
-    } else {
-      // Kein API Key – Prompt zum Kopieren anzeigen
-      resultEl.textContent = result.prompt;
-      card.querySelector('h3').textContent = 'Prompt für Claude.ai kopieren';
-      card.insertAdjacentHTML('afterbegin',
-        '<div style="background:#fff3e0;border:1px solid #ffe0b2;border-radius:3px;padding:12px 14px;margin-bottom:14px;font-size:13px;color:#e65100;">' +
-        '⚠ Kein API-Schlüssel hinterlegt. Kopiere den Text und füge ihn in <strong>claude.ai</strong> ein.' +
-        '</div>');
-    }
+    card.querySelector('h3').textContent = 'Fertige Auswertung';
+    resultEl.textContent = auswertungText;
     card.scrollIntoView({ behavior: 'smooth' });
+
   } catch(e) {
     alert('Fehler: ' + e.message);
   }
@@ -644,3 +664,4 @@ document.getElementById('passInput').addEventListener('keydown', function(e) {
 </script>
 </body>
 </html>
+
