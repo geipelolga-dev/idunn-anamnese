@@ -36,12 +36,50 @@ BIOGENA (Code: AD1123591 · +25€ ab 75€ Erstbestellung):
 • Magnesium, Vitamin C, Vitamin B, Eisen, Q10, Astaxanthin → Code AD1123591
 NATURE HEART (Code: OLGAGEIPEL10 · 10% Rabatt):
 • Schwarzkümmelöl, Vitamin B, Zink → Code OLGAGEIPEL10
-SKAADI® PFLEGE (kosmetik-idunn.de/shop):
-• Reinigungsschaum AHA (39€), PH-Manager (44€), Enzym Peel (49€)
-• Sól Tagescreme SPF30 (119€), Máni Nachtcreme (125€), Göttertränen Elixier (59€)
-• Seren: Feuerfunke (129€), Muttererde (99€), Nährboden (99€), Wassernixe (89€), Windspiel (99€)
-• Augen Roll-On (59€), Lip Balm (10€)
-• Elementra Bundle (450€), Repair Bundle (230€), Glow Bundle (265€)
+SKAADI® PFLEGE – direkte Produktlinks:
+Reinigung & Toner:
+• Reinigungsschaum AHA (39€) → https://kosmetik-idunn.de/produkt/reinigungsschaum-aha-skaadi/
+• PH-Manager Gesichtswasser (44€) → https://kosmetik-idunn.de/produkt/ph-manager-gesichtswasser-skaadi/
+• Ageless Cleansing Milk (55€) → https://kosmetik-idunn.de/produkt/ageless-cleansing-milk/
+• Mildes Reinigungsgel (31€) → https://kosmetik-idunn.de/produkt/mildes-reinigungsgel-gesichtsreinigung/
+• Wirkstoff Tonic (39€) → https://kosmetik-idunn.de/produkt/wirkstoff-tonic/
+• Pure Soft Tonic (12,50€) → https://kosmetik-idunn.de/produkt/pure-soft-tonic/
+• Thermalwasser (25€) → https://kosmetik-idunn.de/produkt/thermalwasser/
+Peelings:
+• Enzym Peel Puder (49€) → https://kosmetik-idunn.de/produkt/enzym-peel-puder-skaadi/
+• Perfekt Peel sanftes Peeling (51€) → https://kosmetik-idunn.de/produkt/perfekt-peel-sanftes-peeling/
+Tagespflege:
+• Sól Sonnengöttin Tagescreme SPF30 (119€) → https://kosmetik-idunn.de/produkt/sol-sonnengoettin-tagescreme-mit-spf-30-skaadi/
+• Tagescreme LSF30 Basispflege (54€) → https://kosmetik-idunn.de/produkt/tagescreme-lsf30-basispflege-skaadi/
+Nachtpflege:
+• Máni Mondgott Nachtcreme (125€) → https://kosmetik-idunn.de/produkt/mani-mondgott-nachtcreme-skaadi/
+• Nachtcreme Basispflege (61€) → https://kosmetik-idunn.de/produkt/nachtcreme-basispflege-skaadi/
+Seren skaadi®:
+• Serum Feuerfunke (129€) → https://kosmetik-idunn.de/produkt/feuerfunke-serum-skaadi/
+• Serum Muttererde (99€) → https://kosmetik-idunn.de/produkt/muttererde-serum-skaadi/
+• Serum Nährboden (99€) → https://kosmetik-idunn.de/produkt/naehrboden-serum-skaadi/
+• Serum Wassernixe (89€) → https://kosmetik-idunn.de/produkt/wassernixe-serum-skaadi/
+• Serum Windspiel (99€) → https://kosmetik-idunn.de/produkt/windspiel-serum-skaadi/
+• Hyaluron Serum (41€) → https://kosmetik-idunn.de/produkt/hyaluron-serum-skaadi/
+• Göttertränen Elixier Pflegeöl (59€) → https://kosmetik-idunn.de/produkt/goettertraenen-elixier-pflegeoel-skaadi/
+• Schöne Augen Roll-On Serum (59€) → https://kosmetik-idunn.de/produkt/schoene-augen-roll-on-serum-skaadi/
+• No Pickel Roll-On (49€) → https://kosmetik-idunn.de/produkt/no-pickel-roll-on-skaadi/
+Weitere Seren:
+• Ageless Serum (119€) → https://kosmetik-idunn.de/produkt/ageless-serum/
+• Azelain Serum (79€) → https://kosmetik-idunn.de/produkt/azelain-serum/
+• Ceramide Serum (46€) → https://kosmetik-idunn.de/produkt/repair-ceramide-serum/
+• Retinol light (23€) → https://kosmetik-idunn.de/produkt/retinol-light-serum/
+• Vitamin C3 Ferulic (79€) → https://kosmetik-idunn.de/produkt/vitamin-c3-ferulic/
+• Vitamin C Serum + Ectoin (41€) → https://kosmetik-idunn.de/produkt/vitamin-c-serum-ectoin/
+• Niacin 10% (41€) → https://kosmetik-idunn.de/produkt/niacin-10-prozent/
+Sets & Bundles:
+• Elementra Bundle (450€) → https://kosmetik-idunn.de/produkt/elementra-bundle-skaadi/
+• Repair Bundle (230€) → https://kosmetik-idunn.de/produkt/repair-bundle-skaadi/
+• Glow Bundle (265€) → https://kosmetik-idunn.de/produkt/glow-bundle/
+• Luxus Set (450€) → https://kosmetik-idunn.de/produkt/luxus-set/
+Extras:
+• Lippenpflege Balm Stick (10€) → https://kosmetik-idunn.de/produkt/lippenpflege-balm-stick-skaadi/
+• Eye & Lip Balm (51€) → https://kosmetik-idunn.de/produkt/eyebalm-lipbalm/
 
 --- EINNAHMEZEITEN & HINWEISE ---
 • Vitamin D3+K2: zur fetthaltigen Mahlzeit, nie mit Eisen
@@ -380,3 +418,4 @@ if __name__ == "__main__":
     with socketserver.TCPServer(("0.0.0.0", PORT), Handler) as httpd:
         httpd.allow_reuse_address = True
         httpd.serve_forever()
+
