@@ -345,19 +345,7 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             answers_text = format_answers(d)
             protokoll = row.get("protokoll", "")
 
-            if GROQ_API_KEY:
-                try:
-                    text = call_claude(name, answers_text, supplements, pflege, protokoll)
-                    self.send_json({"success": True, "auswertung": text, "mode": "api"})
-                except Exception as api_err:
-                    self.send_json({"success": False, "error": f"Groq API Fehler: {str(api_err)}"}, 500)
-                    return
-            else:
-                prompt = f"""{RUNA_SYSTEM}
-
----
-
-Bitte den Fragebogen auswerten und eine persönliche Kundenauswertung erstellen.
+            user_msg = f"""Bitte den Fragebogen auswerten und eine persönliche Kundenauswertung im Runa-Stil erstellen.
 
 Kundin: {name}
 
@@ -370,8 +358,9 @@ GESPRÄCHSNOTIZEN:
 Empfohlene Supplements: {supplements or '–'}
 Empfohlene Pflege: {pflege or '–'}
 
-Erstelle eine persönliche Auswertung für {name}. Füge am Ende eine übersichtliche Produktliste mit Links und Rabattcodes ein."""
-                self.send_json({"success": True, "prompt": prompt, "mode": "copy"})
+Erstelle eine persönliche Auswertung für {name}. Füge am Ende eine übersichtliche Produktliste mit direkten Links und Rabattcodes ein."""
+
+            self.send_json({"success": True, "system": RUNA_SYSTEM, "user_msg": user_msg, "name": name, "mode": "browser"})
         except Exception as e:
             self.send_json({"success": False, "error": str(e)}, 500)
 
