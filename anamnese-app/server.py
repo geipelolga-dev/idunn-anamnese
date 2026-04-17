@@ -132,7 +132,7 @@ Empfohlene Pflege: {pflege or '–'}
 Erstelle eine persönliche Auswertung für {name}. Füge am Ende eine übersichtliche Produktliste mit direkten Links und Rabattcodes ein."""
 
     payload = json.dumps({
-        "model": "claude-3-5-sonnet-20241022",
+                "model": "claude-3-haiku-20240307",
         "max_tokens": 1500,
         "system": RUNA_SYSTEM,
         "messages": [{"role": "user", "content": user_msg}]
