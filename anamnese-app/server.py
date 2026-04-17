@@ -10,7 +10,7 @@ import socketserver
 import json
 import sqlite3
 import os
-import urllib.error
+import urllib.parse
 import urllib.request
 from datetime import datetime
 
@@ -19,9 +19,8 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.environ.get("DATA_DIR", os.path.join(BASE_DIR, "data"))
 DB_PATH = os.path.join(DATA_DIR, "anamnese.db")
 INTERN_PASSWORT = os.environ.get("INTERN_PASSWORT", "idunn2024")
-_ak1 = "sk-ant-api03-EyX6IoydeLHevrQNcxDeK3lvKuNtO5nn"
-_ak2 = "lG0fT-YhRy7JQikWWd9IVvQCX0SrWL8mt0KIXVFQFaXVR8mRW163Aw-WmA-sgAA"
-ANTHROPIC_API_KEY = os.environ.get("ANTHROPIC_API_KEY", _ak1 + _ak2)
+ANTHROPIC_API_KEY = os.environ.get("ANTHROPIC_API_KEY", "")
+
 RUNA_SYSTEM = """Du bist Runa, das interne KI-Beratungssystem von skaadi® holistic beauty (Olga Geipel). Du unterstützt bei der Erstellung ganzheitlicher, persönlicher Kundenauswertungen. STIL: Warm, persönlich, du-Form. Wie eine beste Freundin mit Expertenwissen. Fließende Absätze mit Überschriften. Keine Spiegelstrich-Listen. Max. 400 Wörter. Immer erklären WARUM (Zusammenhang Haut/Körper/Nährstoffe).
 
 --- PRODUKTE & LINKS ---
@@ -132,7 +131,7 @@ Empfohlene Pflege: {pflege or '–'}
 Erstelle eine persönliche Auswertung für {name}. Füge am Ende eine übersichtliche Produktliste mit direkten Links und Rabattcodes ein."""
 
     payload = json.dumps({
-                "model": "claude-3-haiku-20240307",
+        "model": "claude-3-5-sonnet-20241022",
         "max_tokens": 1500,
         "system": RUNA_SYSTEM,
         "messages": [{"role": "user", "content": user_msg}]
